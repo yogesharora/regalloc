@@ -1,7 +1,6 @@
 #ifndef S3INST_H
 #define S3INST_H
 
-typedef enum opcode_t opcode_t;
 enum opcode_t {
     /* no opcode seen (yet) */
     OP_NONE,
@@ -34,7 +33,6 @@ static const char* const opnames[NUM_OPS] = {
     "RET",
 };
 
-typedef enum ccode_t ccode_t;
 enum ccode_t {
     CC_    = 0,
     CC_P   = 0x0200,

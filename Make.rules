@@ -1,7 +1,10 @@
-.SUFFIXES: .o .c .cpp .lex .yy .lex.c .yy.c
+.SUFFIXES: .o .c .cpp .lex .y .lex.c .y.c
+
+%.o: %.cpp 
+	$(CC) -Wall -Wno-unused-function -g -O0 -c $(INCLUDE) $(CFLAGS) $(DEFS) $< -o $@
 
 %.o: %.c
-	$(CC) -Wall -Wno-unused-function -Werror -g -O0 -c $(INCLUDE) $(CFLAGS) $(DEFS) $< -o $@
+	$(CC) -Wall -Wno-unused-function  -g -O0 -c $(INCLUDE) $(CFLAGS) $(DEFS) $< -o $@
 
 %.lex.c: %.lex
 	$(LEX) -o$@ $<

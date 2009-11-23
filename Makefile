@@ -1,7 +1,8 @@
 
 .PHONY: all tests
+.SECONDARY:
 
-OBJS := regalloc.o s3.y.o s3.lex.o
+OBJS :=  s3.lex.o s3.y.o regalloc.o
 
 all: ra
 
@@ -17,7 +18,9 @@ tests:
 clean:
 	-rm -Rf $(OBJS) cmdline.o cmdline.c
 	-rm -f *.y.h *.y.output
+	-rm -f *.y.c *.lex.c
 	-rm -f ra
+	-rm -f ra.exe
 	-rm -f *~
 	-rm -f ./tests/minic.verbose.txt
 
@@ -28,7 +31,8 @@ wc:
 minicopt.o:  cmdline.lex s3inst.h
 cmdline.o: cmdline.c
 cmdline.c: cmdline.lex
-s3.y.o :s3inst.h s3.lex
+s3.y.o : s3inst.h
+s3.lex.o: s3.y.c
 
 include Make.defs
 include Make.rules

@@ -6,8 +6,8 @@
 #include "cmdline.h"
 
 extern int yylex();   
-int yyerror();
-int yywrap();
+int yyerror(...);
+extern "C" int yywrap();
 
 int num_errors=0;
 extern FILE * yyin;
@@ -441,7 +441,7 @@ int yywrap() {
 }
 
 
-int yyerror()
+int yyerror(...)
 {
   num_errors++;
   printf("Un-resolved syntax error: %d.\n",line_num);
