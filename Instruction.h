@@ -16,10 +16,6 @@ class Instruction
 {
 
 public:
-	typedef std::set<Register> RegisterSet;
-	typedef RegisterSet::iterator RegisterSetIter;
-	typedef RegisterSet::const_iterator RegisterSetConstIter;
-
 	Instruction(inst_t inst);
 
 	~Instruction();
@@ -33,7 +29,7 @@ public:
 		return destReg;
 	}
 
-	const Instruction::RegisterSet& getSrcRegisters()
+	const RegisterSet& getSrcRegisters()
 	{
 		return srcReg;
 	}

@@ -2,7 +2,8 @@
 .PHONY: all tests
 .SECONDARY:
 
-OBJS :=  s3.lex.o s3.y.o regalloc.o Instruction.o RegisterNode.o
+OBJS :=	s3.lex.o s3.y.o regalloc.o Instruction.o RegisterNode.o \
+		RegisterAllocator.o
 
 all: ra
 
