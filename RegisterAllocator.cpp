@@ -8,7 +8,7 @@
 #include "RegisterAllocator.h"
 
 RegisterAllocator::RegisterAllocator(inst_t start) :
-	instruction(start),  maxReg(INVALID_REG), minReg(INVALID_REG)
+	instruction(start), maxReg(INVALID_REG), minReg(INVALID_REG)
 {
 	initProgramInfo();
 }
@@ -37,10 +37,10 @@ void RegisterAllocator::initProgramInfo()
 		cur = cur->next;
 	}
 
-	for(RegistersIter iter=registerInfo.begin(); iter!=registerInfo.end(); iter++)
+	for (RegistersIter iter = registerInfo.begin(); iter != registerInfo.end(); iter++)
 	{
-		if(isAllocatableRegister(iter->second.getNo()))
-			liveRangeInfo.addRegister(iter->second);
+		if (isAllocatableRegister(iter->second->getNo()))
+			liveRangeInfo.addRegister(*(iter->second));
 	}
 	noOfInstructions = ctr;
 	noOfRegisters = (maxReg - minReg) + 1;
@@ -48,33 +48,46 @@ void RegisterAllocator::initProgramInfo()
 
 bool RegisterAllocator::isAllocatableRegister(Register no)
 {
-	switch (no){
-		case R0:
-		case R4:
-		case R5:
-		case R6:
-		case R7:
+	switch (no)
+	{
+		case R0 :
+		case R4 :
+		case R5 :
+		case R6 :
+		case R7 :
 			return false;
 			break;
-		default:
+		default :
 			return true;
 	}
 }
 void RegisterAllocator::updateRegisterInfo(Instruction& inst)
 {
-	instructions.reserve(inst.getNo()+1);
+	instructions.reserve(inst.getNo() + 1);
 	instructions[inst.getNo()] = &inst;
 
 	const RegisterSet &srcRegs = inst.getSrcRegisters();
 	for (RegisterSetConstIter iter = srcRegs.begin(); iter != srcRegs.end(); iter++)
 	{
 		Register reg = *iter;
-		registerInfo[reg].addRegUse(inst, reg);
+		if (registerInfo[reg] == NULL)
+		{
+			RegisterInfo *regInfo = new RegisterInfo(reg);
+			registerInfo[reg] = regInfo;
+		}
+		registerInfo[reg]->addRegUse(inst);
 	}
 
 	int destReg = inst.getDestReg();
-	if(destReg!=INVALID_REG)
-		registerInfo[destReg].addRegDef(inst, destReg);
+	if (destReg != INVALID_REG)
+	{
+		if (registerInfo[destReg] == NULL)
+		{
+			RegisterInfo *regInfo = new RegisterInfo(destReg);
+			registerInfo[destReg] = regInfo;
+		}
+		registerInfo[destReg]->addRegDef(inst);
+	}
 }
 
 void RegisterAllocator::calcMaxMinRegisters(inst_t instruction)

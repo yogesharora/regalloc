@@ -78,6 +78,9 @@ const InterferenceGraph& LiveRangeInfo::getInterferenceGraph()
 				}
 			}
 		}
+
+		// create register queues
+		graph->createRegisterQueues();
 	}
 	return *graph;
 }

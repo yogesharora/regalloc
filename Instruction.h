@@ -46,6 +46,7 @@ public:
 
 
 private:
+	Instruction(Instruction&);
 	void initRegisterInfo();
 	void printOperand(FILE *fptr, struct operand op);
 	void printConditionCode(FILE *fptr, int ccode);

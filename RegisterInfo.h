@@ -19,21 +19,28 @@ public:
 	typedef RegisterUsageSet::iterator RegisterUsageSetIter;
 	typedef RegisterUsageSet::const_iterator RegisterUsageSetConstIter;
 
-	RegisterInfo();
+	RegisterInfo(Register reg);
 	~RegisterInfo();
 
-	void addRegUse(Instruction&, Register r);
-	void addRegDef(Instruction&, Register r);
+	void addRegUse(Instruction&);
+	void addRegDef(Instruction&);
 	const RegisterUsageSet& getUserInstructions()
 	{
 		return regAllSet;
 	}
 
-	Register getNo()
+	Register getNo() const
 	{
 		return reg;
 	}
+
+	int getCost() const
+	{
+		return cost;
+	}
+
 private:
+	RegisterInfo(const RegisterInfo&);
 	Register reg;
 
 	int cost;

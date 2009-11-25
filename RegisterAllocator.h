@@ -29,7 +29,7 @@ class RegisterAllocator
 	typedef Instructions::iterator InstructionsIter;
 	Instructions instructions;
 
-	typedef std::map<Register, RegisterInfo> Registers;
+	typedef std::map<Register, RegisterInfo*> Registers;
 	typedef Registers::iterator RegistersIter;
 	Registers registerInfo;
 
@@ -38,6 +38,7 @@ class RegisterAllocator
 	void updateRegisterInfo(Instruction&);
 	bool isAllocatableRegister(Register no);
 
+	RegisterAllocator(RegisterAllocator&);
 public:
 	RegisterAllocator(inst_t start);
 	~RegisterAllocator();

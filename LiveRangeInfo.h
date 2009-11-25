@@ -40,6 +40,7 @@ class LiveRangeInfo
 	int minInstNumber;
 	int maxInstNumber;
 
+	LiveRangeInfo(LiveRangeInfo&);
 public:
 	LiveRangeInfo();
 	~LiveRangeInfo();
