@@ -36,7 +36,7 @@ class RegisterAllocator
 	void initProgramInfo();
 	void calcMaxMinRegisters(inst_t instruction);
 	void updateRegisterInfo(Instruction&);
-
+	bool isAllocatableRegister(Register no);
 
 public:
 	RegisterAllocator(inst_t start);

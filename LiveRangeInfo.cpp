@@ -17,41 +17,28 @@ LiveRangeInfo::~LiveRangeInfo()
 {
 }
 
-void LiveRangeInfo::addInstruction(Instruction &inst,
-		RegisterInfo &regToBeAdded)
-{
-	modified = true;
-
-	int instructionNo = inst.getNo();
-	const RegisterSet allRegs = inst.getAllRegisters();
-	for (RegisterSetConstIter iter = allRegs.begin(); iter != allRegs.end(); iter++)
-	{
-		int reg = *iter;
-		RegRange& range = regInfo[reg];
-		if (range.end < instructionNo)
-			range.end = instructionNo;
-		if (range.start == -1)
-			range.start = instructionNo;
-
-		range.reg = &regToBeAdded;
-	}
-
-	int instNo = inst.getNo();
-	if (instNo > maxInstNumber)
-		maxInstNumber = inst.getNo();
-	else if (instNo < minInstNumber)
-		minInstNumber = instNo;
-	if (minInstNumber == -1)
-		minInstNumber = instNo;
-}
-
 void LiveRangeInfo::addRegister(RegisterInfo &reg)
 {
+	modified =  true;
 	const RegisterInfo::RegisterUsageSet& regUse = reg.getUserInstructions();
 	for (RegisterInfo::RegisterUsageSetConstIter iter = regUse.begin(); iter
 			!= regUse.end(); iter++)
 	{
-		addInstruction(*(*iter), reg);
+		int instNo = (*iter)->getNo();
+		RegRange& range = regInfo[reg.getNo()];
+		if (range.end < instNo)
+			range.end = instNo;
+		if (range.start == -1)
+			range.start = instNo;
+
+		range.reg = &reg;
+
+		if (instNo > maxInstNumber)
+			maxInstNumber = instNo;
+		else if (instNo < minInstNumber)
+			minInstNumber = instNo;
+		if (minInstNumber == -1)
+			minInstNumber = instNo;
 	}
 }
 

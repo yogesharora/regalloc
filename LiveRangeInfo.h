@@ -39,7 +39,6 @@ class LiveRangeInfo
 	bool modified;
 	int minInstNumber;
 	int maxInstNumber;
-	void addInstruction(Instruction &, RegisterInfo &reg);
 
 public:
 	LiveRangeInfo();

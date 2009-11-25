@@ -12,6 +12,10 @@
 #define INVALID_REG -1
 typedef int Register;
 #define R0 0
+#define R4 4
+#define R5 5
+#define R6 6
+#define R7 7
 #include <vector>
 typedef std::vector<Register> RegisterSet;
 typedef RegisterSet::iterator RegisterSetIter;

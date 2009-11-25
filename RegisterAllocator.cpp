@@ -39,12 +39,27 @@ void RegisterAllocator::initProgramInfo()
 
 	for(RegistersIter iter=registerInfo.begin(); iter!=registerInfo.end(); iter++)
 	{
-		liveRangeInfo.addRegister(iter->second);
+		if(isAllocatableRegister(iter->second.getNo()))
+			liveRangeInfo.addRegister(iter->second);
 	}
 	noOfInstructions = ctr;
 	noOfRegisters = (maxReg - minReg) + 1;
 }
 
+bool RegisterAllocator::isAllocatableRegister(Register no)
+{
+	switch (no){
+		case R0:
+		case R4:
+		case R5:
+		case R6:
+		case R7:
+			return false;
+			break;
+		default:
+			return true;
+	}
+}
 void RegisterAllocator::updateRegisterInfo(Instruction& inst)
 {
 	instructions.reserve(inst.getNo()+1);
