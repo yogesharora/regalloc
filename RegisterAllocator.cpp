@@ -30,7 +30,7 @@ void RegisterAllocator::initProgramInfo()
 	while (cur != NULL)
 	{
 		calcMaxMinRegisters(cur);
-		Instruction* newInstruction = new Instruction(cur);
+		Instruction* newInstruction = new Instruction(cur, ctr);
 		updateRegisterInfo(*newInstruction);
 
 		ctr++;

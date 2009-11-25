@@ -7,8 +7,8 @@
 
 #include "Instruction.h"
 
-Instruction::Instruction(inst_t inst) :
-	instruction(inst), destReg(INVALID_REG)
+Instruction::Instruction(inst_t inst, int no) :
+	instruction(inst), destReg(INVALID_REG), instructionNumber(no)
 {
 	initRegisterInfo();
 }

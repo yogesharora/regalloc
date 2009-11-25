@@ -14,26 +14,37 @@
 #include "RegisterInfo.h"
 #include <vector>
 #include <map>
+#include <set>
 
 class LiveRangeInfo
 {
 	struct RegRange {
 		int start;
 		int end;
+		RegisterInfo *reg;
 
 		RegRange() : start(-1), end(-1) {}
 	};
 
 	typedef std::map<Register, RegRange> RegRangeInfo;
+	typedef RegRangeInfo::iterator RegRangeInfoIter;
+
+	typedef std::set<RegisterInfo*> RegisterInfoSet;
+	typedef RegisterInfoSet::iterator RegisterInfoSetIter;
+	typedef std::vector<RegisterInfoSet> RegRanges;
+
 	RegRangeInfo regInfo;
 
 	InterferenceGraph *graph;
 	bool modified;
+	int minInstNumber;
+	int maxInstNumber;
+	void addInstruction(Instruction &, RegisterInfo &reg);
 
 public:
 	LiveRangeInfo();
 	~LiveRangeInfo();
-	void addInstruction(Instruction &);
+
 	void addRegister(RegisterInfo &);
 	const InterferenceGraph& getInterferenceGraph();
 };
