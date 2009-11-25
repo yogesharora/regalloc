@@ -8,7 +8,8 @@
 #include "globals.h"
 #include "LiveRangeInfo.h"
 
-LiveRangeInfo::LiveRangeInfo()
+LiveRangeInfo::LiveRangeInfo() :
+	graph(NULL), modified(false)
 {
 }
 
@@ -18,6 +19,8 @@ LiveRangeInfo::~LiveRangeInfo()
 
 void LiveRangeInfo::addInstruction(Instruction &inst)
 {
+	modified=true;
+
 	int instructionNo = inst.getNo();
 	const RegisterSet allRegs = inst.getAllRegisters();
 	for (RegisterSetConstIter iter = allRegs.begin(); iter != allRegs.end(); iter++)
@@ -39,4 +42,13 @@ void LiveRangeInfo::addRegister(RegisterInfo &reg)
 	{
 		addInstruction(*(*iter));
 	}
+}
+
+const InterferenceGraph& LiveRangeInfo::getInterferenceGraph()
+{
+	if(modified)
+	{
+
+	}
+	return *graph;
 }

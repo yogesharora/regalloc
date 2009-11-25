@@ -62,6 +62,7 @@ void c_regalloc()
 	/************************************************************************/
 	/*    Call your implementation from here                                */
 	RegisterAllocator reg(instList);
+	reg.allocateRegs();
 
 	/* determine live ranges using liveness analysis */
 	/* do:

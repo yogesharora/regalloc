@@ -37,9 +37,11 @@ class RegisterAllocator
 	void calcMaxMinRegisters(inst_t instruction);
 	void updateRegisterInfo(Instruction&);
 
+
 public:
 	RegisterAllocator(inst_t start);
 	~RegisterAllocator();
+	void allocateRegs();
 };
 
 #endif /* REGISTERALLOCATOR_H_ */

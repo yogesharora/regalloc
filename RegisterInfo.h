@@ -29,8 +29,14 @@ public:
 		return regAllSet;
 	}
 
+	Register getNo()
+	{
+		return reg;
+	}
 private:
 	Register reg;
+
+	int cost;
 
 	RegisterUsageSet regUseSet;
 	RegisterUsageSet regDefSet;

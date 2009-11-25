@@ -84,3 +84,8 @@ void RegisterAllocator::calcMaxMinRegisters(inst_t instruction)
 		}
 	}
 }
+
+void RegisterAllocator::allocateRegs()
+{
+	liveRangeInfo.getInterferenceGraph();
+}
