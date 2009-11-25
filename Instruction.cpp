@@ -8,7 +8,7 @@
 #include "Instruction.h"
 
 Instruction::Instruction(inst_t inst) :
-	instruction(inst)
+	instruction(inst), destReg(INVALID_REG)
 {
 	initRegisterInfo();
 }
@@ -30,10 +30,10 @@ void Instruction::initRegisterInfo()
 		case OP_ORL :
 		case OP_SUB :
 			destReg = instruction->ops[0].reg;
-			srcReg.insert(instruction->ops[1].reg);
+			srcReg.push_back(instruction->ops[1].reg);
 
 			if (instruction->ops[2].t == op_reg)
-				srcReg.insert(instruction->ops[2].reg);
+				srcReg.push_back(instruction->ops[2].reg);
 			break;
 		case OP_SET :
 			destReg = instruction->ops[0].reg;
@@ -41,42 +41,42 @@ void Instruction::initRegisterInfo()
 		case OP_NOT :
 		case OP_NOTL :
 			destReg = instruction->ops[0].reg;
-			srcReg.insert(instruction->ops[1].reg);
+			srcReg.push_back(instruction->ops[1].reg);
 			break;
 		case OP_LD :
 			destReg = instruction->ops[0].reg;
 			break;
 		case OP_LDI :
 			destReg = instruction->ops[0].reg;
-			srcReg.insert(instruction->ops[1].reg);
+			srcReg.push_back(instruction->ops[1].reg);
 			break;
 		case OP_LDR :
 			destReg = instruction->ops[0].reg;
-			srcReg.insert(instruction->ops[1].reg);
+			srcReg.push_back(instruction->ops[1].reg);
 			if (instruction->ops[2].t == op_reg)
-				srcReg.insert(instruction->ops[2].reg);
+				srcReg.push_back(instruction->ops[2].reg);
 			break;
 		case OP_ST :
-			srcReg.insert(instruction->ops[0].reg);
+			srcReg.push_back(instruction->ops[0].reg);
 			break;
 		case OP_STI :
-			srcReg.insert(instruction->ops[0].reg);
+			srcReg.push_back(instruction->ops[0].reg);
 			break;
 		case OP_STR :
-			srcReg.insert(instruction->ops[0].reg);
+			srcReg.push_back(instruction->ops[0].reg);
 			if (instruction->ops[1].t == op_reg)
-				srcReg.insert(instruction->ops[1].reg);
+				srcReg.push_back(instruction->ops[1].reg);
 			if (instruction->ops[2].t == op_reg)
-				srcReg.insert(instruction->ops[2].reg);
+				srcReg.push_back(instruction->ops[2].reg);
 			break;
 		case OP_BR :
-			srcReg.insert(instruction->ops[0].reg);
+			srcReg.push_back(instruction->ops[0].reg);
 			break;
 		case OP_LEA :
 			destReg = instruction->ops[0].reg;
 			break;
 		case OP_OUT :
-			srcReg.insert(R0);
+			srcReg.push_back(R0);
 			break;
 		case OP_IN :
 			destReg = R0;
@@ -89,6 +89,12 @@ void Instruction::initRegisterInfo()
 		default :
 			break;
 	}
+
+	if(destReg!=INVALID_REG)
+		allReg.push_back(destReg);
+
+	for(RegisterSetIter iter= srcReg.begin(); iter!=srcReg.end(); iter++)
+		allReg.push_back(*iter);
 }
 
 void Instruction::renameRegister(Register from, Register to)

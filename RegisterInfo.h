@@ -1,5 +1,5 @@
 /*
- * RegisterNode.h
+ * RegisterInfo.h
  *
  *  Created on: Nov 23, 2009
  *      Author: Yogesh Arora
@@ -11,28 +11,23 @@
 #include "globals.h"
 #include "Instruction.h"
 #include <set>
-class RegisterNode
+
+class RegisterInfo
 {
 	Register reg;
 
 	typedef std::set<Instruction*> RegisterUsageSet;
 	typedef RegisterUsageSet::iterator RegisterUsageSetIter;
 
-	typedef std::set<RegisterNode*> InterferingRegister;
-	typedef InterferingRegister::iterator InterferingRegisterIter;
-
 	RegisterUsageSet regUseSet;
 	RegisterUsageSet regDefSet;
-	InterferingRegister interferingRegs;
 
 public:
-	RegisterNode(Register reg);
-	~RegisterNode();
+	RegisterInfo();
+	~RegisterInfo();
 
-	void addRegUse(Instruction& );
-	void addRegDef(Instruction& );
-	void addInterferingReg(RegisterNode& );
-
+	void addRegUse(Instruction& , Register r);
+	void addRegDef(Instruction& , Register r);
 };
 
 #endif /* REGISTERNODE_H_ */

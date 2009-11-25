@@ -3,6 +3,7 @@
 #include <string.h>
 #include "s3inst.h"
 #include "cmdline.h"
+#include "RegisterAllocator.h"
 
 extern int num_errors;
 extern int yyerror(...);
@@ -60,6 +61,7 @@ void c_regalloc()
 	/************************************************************************/
 	/************************************************************************/
 	/*    Call your implementation from here                                */
+	RegisterAllocator reg(instList);
 
 	/* determine live ranges using liveness analysis */
 	/* do:

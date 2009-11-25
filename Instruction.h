@@ -34,6 +34,11 @@ public:
 		return srcReg;
 	}
 
+	const RegisterSet& getAllRegisters()
+	{
+		return allReg;
+	}
+
 	int getNo()
 	{
 		return instructionNumber;
@@ -50,6 +55,7 @@ private:
 	int destReg;
 	bool rootNode;
 	RegisterSet srcReg;
+	RegisterSet allReg;
 };
 
 #endif /* INSTRUCTION_H_ */

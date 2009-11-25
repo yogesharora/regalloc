@@ -11,8 +11,10 @@
 #include "globals.h"
 #include "s3inst.h"
 #include "Instruction.h"
-#include "RegisterNode.h"
+#include "RegisterInfo.h"
+#include "LiveRangeInfo.h"
 #include <vector>
+#include <map>
 
 class RegisterAllocator
 {
@@ -21,14 +23,18 @@ class RegisterAllocator
 	int noOfRegisters;
 	Register maxReg;
 	Register minReg;
+	LiveRangeInfo liveRangeInfo;
 
 	typedef std::vector<Instruction* > Instructions;
 	typedef Instructions::iterator InstructionsIter;
 	Instructions instructions;
 
+	typedef std::map<Register, RegisterInfo> Registers;
+	Registers registerInfo;
+
 	void initProgramInfo();
 	void calcMaxMinRegisters(inst_t instruction);
-	void updateLiveRangeInfo(Instruction&);
+	void updateInstructionInfo(Instruction&);
 
 public:
 	RegisterAllocator(inst_t start);
