@@ -20,7 +20,7 @@ void LiveRangeInfo::addInstruction(Instruction &inst)
 {
 	int instructionNo = inst.getNo();
 	const RegisterSet allRegs = inst.getAllRegisters();
-	for(RegisterSetConstIter iter = allRegs.begin(); iter != allRegs.end() ; iter++)
+	for (RegisterSetConstIter iter = allRegs.begin(); iter != allRegs.end(); iter++)
 	{
 		int reg = *iter;
 		RegRange& range = regInfo[reg];
@@ -28,5 +28,15 @@ void LiveRangeInfo::addInstruction(Instruction &inst)
 			range.end = instructionNo;
 		if (range.start == -1)
 			range.start = instructionNo;
+	}
+}
+
+void LiveRangeInfo::addRegister(RegisterInfo &reg)
+{
+	const RegisterInfo::RegisterUsageSet& regUse = reg.getUserInstructions();
+	for (RegisterInfo::RegisterUsageSetConstIter iter = regUse.begin(); iter
+			!= regUse.end(); iter++)
+	{
+		addInstruction(*(*iter));
 	}
 }

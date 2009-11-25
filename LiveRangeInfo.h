@@ -10,6 +10,7 @@
 
 #include "globals.h"
 #include "Instruction.h"
+#include "RegisterInfo.h"
 #include <vector>
 #include <map>
 
@@ -29,6 +30,7 @@ public:
 	LiveRangeInfo();
 	~LiveRangeInfo();
 	void addInstruction(Instruction &);
+	void addRegister(RegisterInfo &);
 };
 
 #endif /* LIVERANGEINFO_H_ */

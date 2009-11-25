@@ -30,11 +30,12 @@ class RegisterAllocator
 	Instructions instructions;
 
 	typedef std::map<Register, RegisterInfo> Registers;
+	typedef Registers::iterator RegistersIter;
 	Registers registerInfo;
 
 	void initProgramInfo();
 	void calcMaxMinRegisters(inst_t instruction);
-	void updateInstructionInfo(Instruction&);
+	void updateRegisterInfo(Instruction&);
 
 public:
 	RegisterAllocator(inst_t start);

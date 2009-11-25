@@ -31,19 +31,22 @@ void RegisterAllocator::initProgramInfo()
 	{
 		calcMaxMinRegisters(cur);
 		Instruction* newInstruction = new Instruction(cur);
-		updateInstructionInfo(*newInstruction);
+		updateRegisterInfo(*newInstruction);
 
 		ctr++;
 		cur = cur->next;
 	}
 
+	for(RegistersIter iter=registerInfo.begin(); iter!=registerInfo.end(); iter++)
+	{
+		liveRangeInfo.addRegister(iter->second);
+	}
 	noOfInstructions = ctr;
 	noOfRegisters = (maxReg - minReg) + 1;
 }
 
-void RegisterAllocator::updateInstructionInfo(Instruction& inst)
+void RegisterAllocator::updateRegisterInfo(Instruction& inst)
 {
-	liveRangeInfo.addInstruction(inst);
 	instructions.reserve(inst.getNo()+1);
 	instructions[inst.getNo()] = &inst;
 

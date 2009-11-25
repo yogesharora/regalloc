@@ -14,20 +14,28 @@
 
 class RegisterInfo
 {
-	Register reg;
-
+public:
 	typedef std::set<Instruction*> RegisterUsageSet;
 	typedef RegisterUsageSet::iterator RegisterUsageSetIter;
+	typedef RegisterUsageSet::const_iterator RegisterUsageSetConstIter;
 
-	RegisterUsageSet regUseSet;
-	RegisterUsageSet regDefSet;
-
-public:
 	RegisterInfo();
 	~RegisterInfo();
 
-	void addRegUse(Instruction& , Register r);
-	void addRegDef(Instruction& , Register r);
+	void addRegUse(Instruction&, Register r);
+	void addRegDef(Instruction&, Register r);
+	const RegisterUsageSet& getUserInstructions()
+	{
+		return regAllSet;
+	}
+
+private:
+	Register reg;
+
+	RegisterUsageSet regUseSet;
+	RegisterUsageSet regDefSet;
+	RegisterUsageSet regAllSet;
+
 };
 
 #endif /* REGISTERNODE_H_ */

@@ -20,11 +20,13 @@ void RegisterInfo::addRegUse(Instruction& inst, Register r)
 {
 	reg = r;
 	regUseSet.insert(&inst);
+	regAllSet.insert(&inst);
 }
 
 void RegisterInfo::addRegDef(Instruction& inst, Register r)
 {
 	reg = r;
 	regDefSet.insert(&inst);
+	regAllSet.insert(&inst);
 }
 

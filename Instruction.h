@@ -24,22 +24,22 @@ public:
 
 	void printInstruction(FILE* fptr);
 
-	Register getDestReg()
+	Register getDestReg() const
 	{
 		return destReg;
 	}
 
-	const RegisterSet& getSrcRegisters()
+	const RegisterSet& getSrcRegisters() const
 	{
 		return srcReg;
 	}
 
-	const RegisterSet& getAllRegisters()
+	const RegisterSet& getAllRegisters() const
 	{
 		return allReg;
 	}
 
-	int getNo()
+	int getNo() const
 	{
 		return instructionNumber;
 	}
