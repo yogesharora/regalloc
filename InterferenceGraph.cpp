@@ -17,7 +17,21 @@ InterferenceGraph::~InterferenceGraph()
 
 void InterferenceGraph::addInterference(RegisterInfo &reg1, RegisterInfo &reg2)
 {
-	printf("%d - %d\n", reg1.getNo(), reg2.getNo());
 	graph[reg1.getNo()].insert(&reg2);
 	graph[reg2.getNo()].insert(&reg1);
+}
+
+void InterferenceGraph::print() const
+{
+	for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
+	{
+		printf("R%d:", iter->first);
+		const RegNeighbors &neighbors = iter->second;
+		for (RegNeighborsIter iter2 = neighbors.begin(); iter2
+				!= neighbors.end(); iter2++)
+		{
+			printf(" R%d", (*iter2)->getNo());
+		}
+		printf("\n");
+	}
 }

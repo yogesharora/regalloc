@@ -16,7 +16,10 @@
 class InterferenceGraph
 {
 	typedef std::set<RegisterInfo*> RegNeighbors;
+	typedef RegNeighbors::iterator RegNeighborsIter;
 	typedef std::map<int , RegNeighbors> RegGraph;
+	typedef RegGraph::iterator RegGraphIter;
+	typedef RegGraph::const_iterator RegGraphConstIter;
 	RegGraph graph;
 
 
@@ -30,6 +33,7 @@ public:
 	~InterferenceGraph();
 	void addInterference(RegisterInfo &reg1, RegisterInfo &reg2);
 	void createRegisterQueues();
+	void print() const;
 };
 
 #endif /* INTERFERENCEGRAPH_H_ */
