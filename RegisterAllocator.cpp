@@ -8,7 +8,7 @@
 #include "RegisterAllocator.h"
 
 RegisterAllocator::RegisterAllocator(inst_t start) :
-	instruction(start)
+	instruction(start),  maxReg(INVALID_REG), minReg(INVALID_REG)
 {
 	initProgramInfo();
 }
