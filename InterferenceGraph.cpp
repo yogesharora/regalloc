@@ -38,9 +38,49 @@ void InterferenceGraph::print() const
 
 void InterferenceGraph::createRegisterQueues()
 {
-	for(RegGraphIter iter=graph.begin();iter!=graph.end();iter++)
+	for (RegGraphIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
-		spillQueue.push(iter->first);
-		removalQueue.push(&(*iter));
+		removalQueue.push_back(&(*iter));
+	}
+}
+
+RegisterInfo* InterferenceGraph::removeNodeWithDegreeLessThan(int maxDegree)
+{
+	removalQueue.sort(removalCriteria());
+	RegisterInfo* node = removalQueue.front()->first;
+	int degree = removalQueue.front()->second.size();
+	if (degree < maxDegree)
+	{
+		removeFrontNode();
+		return node;
+	}
+	else
+		return NULL;
+}
+
+RegisterInfo* InterferenceGraph::removeSpillable()
+{
+	removalQueue.sort(spillCriteria());
+	RegisterInfo* node = removalQueue.front()->first;
+	removeFrontNode();
+	return node;
+}
+
+void InterferenceGraph::removeFrontNode()
+{
+	RegNeighbors& neighbors = removalQueue.front()->second;
+	RegisterInfo* nodeToRemove = removalQueue.front()->first;
+	for (RegNeighborsIter iter = neighbors.begin(); iter != neighbors.end(); iter++)
+	{
+		RegisterInfo* neighbor = *iter;
+		RegNeighbors& neighborsEdges = graph[neighbor];
+		neighborsEdges.erase(nodeToRemove);
+	}
+
+	graph.erase(nodeToRemove);
+	removalQueue.clear();
+	for (RegGraphIter iter = graph.begin(); iter != graph.end(); iter++)
+	{
+		removalQueue.push_back(&(*iter));
 	}
 }

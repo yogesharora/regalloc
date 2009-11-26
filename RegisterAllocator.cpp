@@ -6,6 +6,9 @@
  */
 
 #include "RegisterAllocator.h"
+#include <stack>
+
+using namespace std;
 
 RegisterAllocator::RegisterAllocator(inst_t start) :
 	instruction(start), maxReg(INVALID_REG), minReg(INVALID_REG)
@@ -113,8 +116,52 @@ void RegisterAllocator::calcMaxMinRegisters(inst_t instruction)
 	}
 }
 
-void RegisterAllocator::allocateRegs()
+void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
+		int noOfSpills)
 {
-	const InterferenceGraph& graph = liveRangeInfo.getInterferenceGraph();
-	graph.print();
+	bool allAllocated = false;
+	do
+	{
+		InterferenceGraph& graph = liveRangeInfo.getInterferenceGraph();
+
+		InterferenceGraph graphCopy(graph);
+		DeletedNodes deletedNodes;
+		deletNodesFromGraph(graph, deletedNodes, noOfRegs);
+
+	} while (!allAllocated);
+
+	/* determine live ranges using liveness analysis */
+	/* do:
+	 calculate cost of spilling
+	 build interference graph
+	 optimistically remove nodes
+	 try to color
+	 if fail:
+	 choose reg with lowest cost to spill
+	 add spill code
+	 while (fail)
+	 */
 }
+
+void RegisterAllocator::deletNodesFromGraph(InterferenceGraph& graph,
+		DeletedNodes& stack, int noOfRegs)
+{
+	while (graph.getNoNodes() != 1)
+	{
+//		printf("graph size %d\n", graph.getNoNodes());
+//		graph.print();
+
+		RegisterInfo* node = graph.removeNodeWithDegreeLessThan(noOfRegs);
+		if (node != NULL)
+		{
+			stack.push(DeletedNode(node, false));
+		}
+		else
+		{
+
+			node =  graph.removeSpillable();
+			stack.push(DeletedNode(node, true));
+		}
+	}
+}
+

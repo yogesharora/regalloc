@@ -11,7 +11,7 @@
 #include "RegisterInfo.h"
 #include <set>
 #include <map>
-#include <queue>
+#include <list>
 
 class InterferenceGraph
 {
@@ -31,16 +31,16 @@ class InterferenceGraph
 	RegGraph graph;
 
 	//	RemovalQueue removalQueue;
+	typedef std::list<RegGraphNode*> RemovalQueue;
+	RemovalQueue removalQueue;
+
 	struct spillCriteria
 	{
-		bool operator()(RegisterInfo* a, RegisterInfo* b)
+		bool operator()(RegGraphNode* a, RegGraphNode* b)
 		{
-			return a->getCost() < b->getCost();
+			return a->first->getCost() < b->first->getCost();
 		}
 	};
-	typedef std::priority_queue<RegisterInfo*, std::vector<RegisterInfo*>,
-			spillCriteria> SpillQueue;
-	SpillQueue spillQueue;
 
 	struct removalCriteria
 	{
@@ -49,17 +49,21 @@ class InterferenceGraph
 			return a->second.size() < b->second.size();
 		}
 	};
-	typedef std::priority_queue<RegGraphNode*, std::vector<RegGraphNode*>,
-			removalCriteria> RemovalQueue;
-	RemovalQueue removalQueue;
 
-	InterferenceGraph(InterferenceGraph&);
+	void removeFrontNode();
 public:
 	InterferenceGraph();
 	~InterferenceGraph();
 	void addInterference(RegisterInfo &reg1, RegisterInfo &reg2);
 	void createRegisterQueues();
+	RegisterInfo* removeNodeWithDegreeLessThan(int degree);
+	RegisterInfo* removeSpillable();
 	void print() const;
+
+	int getNoNodes()
+	{
+		return graph.size();
+	}
 };
 
 #endif /* INTERFERENCEGRAPH_H_ */

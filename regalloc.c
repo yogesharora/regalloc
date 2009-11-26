@@ -62,19 +62,9 @@ void c_regalloc()
 	/************************************************************************/
 	/*    Call your implementation from here                                */
 	RegisterAllocator reg(instList);
-	reg.allocateRegs();
+	reg.allocateRegs(10, 4, 10);
 
-	/* determine live ranges using liveness analysis */
-	/* do:
-	 calculate cost of spilling
-	 build interference graph
-	 optimistically remove nodes
-	 try to color
-	 if fail:
-	 choose reg with lowest cost to spill
-	 add spill code
-	 while (fail)
-	 */
+
 
 	/************************************************************************/
 	/************************************************************************/

@@ -46,7 +46,7 @@ public:
 	~LiveRangeInfo();
 
 	void addRegister(RegisterInfo &);
-	const InterferenceGraph& getInterferenceGraph();
+	InterferenceGraph& getInterferenceGraph();
 };
 
 #endif /* LIVERANGEINFO_H_ */

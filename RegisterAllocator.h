@@ -15,6 +15,7 @@
 #include "LiveRangeInfo.h"
 #include <vector>
 #include <map>
+#include <stack>
 
 class RegisterAllocator
 {
@@ -33,16 +34,27 @@ class RegisterAllocator
 	typedef Registers::iterator RegistersIter;
 	Registers registerInfo;
 
+	struct DeletedNode
+	{
+		RegisterInfo* node;
+		bool spilled;
+
+		DeletedNode(RegisterInfo* n, bool s):  node(n), spilled(s) {}
+	};
+	typedef std::stack<DeletedNode> DeletedNodes;
+
 	void initProgramInfo();
 	void calcMaxMinRegisters(inst_t instruction);
 	void updateRegisterInfo(Instruction&);
 	bool isAllocatableRegister(Register no);
+	void deletNodesFromGraph(InterferenceGraph& graph, DeletedNodes& stack, int noRegs);
 
 	RegisterAllocator(RegisterAllocator&);
 public:
 	RegisterAllocator(inst_t start);
 	~RegisterAllocator();
-	void allocateRegs();
+	void allocateRegs(Register startReg, int noOfRegs, int noOfSpills );
+
 };
 
 #endif /* REGISTERALLOCATOR_H_ */

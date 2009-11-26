@@ -42,7 +42,7 @@ void LiveRangeInfo::addRegister(RegisterInfo &reg)
 	}
 }
 
-const InterferenceGraph& LiveRangeInfo::getInterferenceGraph()
+InterferenceGraph& LiveRangeInfo::getInterferenceGraph()
 {
 	if (modified)
 	{
@@ -84,3 +84,4 @@ const InterferenceGraph& LiveRangeInfo::getInterferenceGraph()
 	}
 	return *graph;
 }
+
