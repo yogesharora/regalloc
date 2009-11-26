@@ -62,7 +62,7 @@ void c_regalloc()
 	/************************************************************************/
 	/*    Call your implementation from here                                */
 	RegisterAllocator reg(instList);
-	reg.allocateRegs(10, 4, 10);
+	reg.allocateRegs(10, 3, 10);
 
 
 

@@ -19,13 +19,26 @@ class InterferenceGraph
 	typedef RegNeighbors::iterator RegNeighborsIter;
 	struct regInfocompare
 	{
-		bool operator()(RegisterInfo* a, RegisterInfo* b)
+		bool operator()(const RegisterInfo* a, const RegisterInfo* b)
 		{
 			return a->getNo() < b->getNo();
 		}
 	};
-	typedef std::map<RegisterInfo*, RegNeighbors, regInfocompare> RegGraph;
+
+	struct RegGraphNodeInfo
+	{
+		RegNeighbors neighbors;
+		Register assignedReg;
+
+		RegGraphNodeInfo() : assignedReg(INVALID_REG)
+		{
+
+		}
+	};
+
+	typedef std::map<RegisterInfo*, RegGraphNodeInfo> RegGraph;
 	typedef RegGraph::value_type RegGraphNode;
+
 	typedef RegGraph::iterator RegGraphIter;
 	typedef RegGraph::const_iterator RegGraphConstIter;
 	RegGraph graph;
@@ -46,7 +59,7 @@ class InterferenceGraph
 	{
 		bool operator()(RegGraphNode* a, RegGraphNode* b)
 		{
-			return a->second.size() < b->second.size();
+			return a->second.neighbors.size() < b->second.neighbors.size();
 		}
 	};
 
@@ -58,7 +71,9 @@ public:
 	void createRegisterQueues();
 	RegisterInfo* removeNodeWithDegreeLessThan(int degree);
 	RegisterInfo* removeSpillable();
+	Register assignRegistersToNode(RegisterInfo& reg, int startReg, int noOfRegs);
 	void print() const;
+	void printAssignedRegisters() const;
 
 	int getNoNodes()
 	{

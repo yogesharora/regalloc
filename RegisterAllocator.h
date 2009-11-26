@@ -48,7 +48,7 @@ class RegisterAllocator
 	void updateRegisterInfo(Instruction&);
 	bool isAllocatableRegister(Register no);
 	void deletNodesFromGraph(InterferenceGraph& graph, DeletedNodes& stack, int noRegs);
-
+	bool assignRegistersToGraph(InterferenceGraph& graph, DeletedNodes& stack, int startReg, int noOfRegs);
 	RegisterAllocator(RegisterAllocator&);
 public:
 	RegisterAllocator(inst_t start);

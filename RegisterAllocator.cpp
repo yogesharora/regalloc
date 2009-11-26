@@ -126,8 +126,14 @@ void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 
 		InterferenceGraph graphCopy(graph);
 		DeletedNodes deletedNodes;
-		deletNodesFromGraph(graph, deletedNodes, noOfRegs);
+		deletNodesFromGraph(graphCopy, deletedNodes, noOfRegs);
+		allAllocated = assignRegistersToGraph(graph, deletedNodes, startReg,
+				noOfRegs);
 
+		if(allAllocated)
+		{
+			graph.printAssignedRegisters();
+		}
 	} while (!allAllocated);
 
 	/* determine live ranges using liveness analysis */
@@ -143,25 +149,51 @@ void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 	 */
 }
 
+bool RegisterAllocator::assignRegistersToGraph(InterferenceGraph& graph,
+		DeletedNodes& stack, int startReg, int noOfRegs)
+{
+	while (stack.size() != 0)
+	{
+		DeletedNode& deletedNode = stack.top();
+		Register assignedRegister = graph.assignRegistersToNode(
+				*deletedNode.node, startReg, noOfRegs);
+
+		if(assignedRegister==INVALID_REG)
+		{
+			// spill
+
+			return false;
+		}
+
+		stack.pop();
+	}
+	return true;
+}
+
 void RegisterAllocator::deletNodesFromGraph(InterferenceGraph& graph,
 		DeletedNodes& stack, int noOfRegs)
 {
-	while (graph.getNoNodes() != 1)
+	while (graph.getNoNodes() != 0)
 	{
-//		printf("graph size %d\n", graph.getNoNodes());
-//		graph.print();
+		printf("graph size %d\n", graph.getNoNodes());
+		graph.print();
 
 		RegisterInfo* node = graph.removeNodeWithDegreeLessThan(noOfRegs);
 		if (node != NULL)
 		{
+			printf("register removed %d\n", node->getNo());
 			stack.push(DeletedNode(node, false));
 		}
 		else
 		{
 
-			node =  graph.removeSpillable();
+			node = graph.removeSpillable();
+			printf("register spilled %d with cost %d\n", node->getNo(),
+					node->getCost());
 			stack.push(DeletedNode(node, true));
 		}
 	}
+	printf("graph size %d\n", graph.getNoNodes());
+	graph.print();
 }
 
