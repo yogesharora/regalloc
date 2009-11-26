@@ -24,9 +24,20 @@ public:
 
 	void addRegUse(Instruction&);
 	void addRegDef(Instruction&);
-	const RegisterUsageSet& getUserInstructions()
+
+	const RegisterUsageSet& getAllInstructions()
 	{
 		return regAllSet;
+	}
+
+	const RegisterUsageSet& getUseInstructions()
+	{
+		return regUseSet;
+	}
+
+	const RegisterUsageSet& getDefInstructions()
+	{
+		return regDefSet;
 	}
 
 	Register getNo() const

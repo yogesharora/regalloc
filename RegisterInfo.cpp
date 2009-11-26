@@ -20,13 +20,12 @@ void RegisterInfo::addRegUse(Instruction& inst)
 {
 	regUseSet.insert(&inst);
 	regAllSet.insert(&inst);
-	cost +=2;
+	cost += 2;
 }
 
 void RegisterInfo::addRegDef(Instruction& inst)
 {
 	regDefSet.insert(&inst);
 	regAllSet.insert(&inst);
-	cost+=1;
+	cost += 1;
 }
-

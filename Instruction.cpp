@@ -17,6 +17,130 @@ Instruction::~Instruction()
 {
 }
 
+Instruction& Instruction::fillInst(int reg, int newReg, int r5Offset)
+{
+	renameSrcRegister(reg, newReg);
+	allReg.clear();
+	srcReg.clear();
+	destReg = INVALID_REG;
+	initRegisterInfo();
+	inst_t fill = genFillInst(newReg, r5Offset);
+	Instruction *fillInst = new Instruction(fill, instructionNumber-1);
+	return *fillInst;
+}
+
+inst_t Instruction::genFillInst(int newReg, int r5Offset)
+{
+	inst_t fill = new inst_d;
+	fill->op = OP_LDR;
+	fill->ops[0].t = op_reg;
+	fill->ops[0].reg = newReg;
+	fill->ops[1].t = op_reg;
+	fill->ops[1].reg = R5;
+	fill->ops[2].t = op_imm;
+	fill->ops[2].reg = r5Offset;
+	fill->label = NULL;
+	return fill;
+}
+
+Instruction& Instruction::spillInst(int reg, int newReg, int r5Offset)
+{
+	renameDestRegister(reg, newReg);
+	allReg.clear();
+	srcReg.clear();
+	destReg = INVALID_REG;
+	initRegisterInfo();
+	inst_t spill = genSpillInst(newReg, r5Offset);
+	Instruction *spillInst = new Instruction(spill, instructionNumber+1);
+	return *spillInst;
+}
+
+inst_t Instruction::genSpillInst(int oldReg, int r5Offset)
+{
+	inst_t spill = new inst_d;
+	spill->op = OP_STR;
+	spill->ops[0].t = op_reg;
+	spill->ops[0].reg = oldReg;
+	spill->ops[1].t = op_reg;
+	spill->ops[1].reg = R5;
+	spill->ops[2].t = op_imm;
+	spill->ops[2].reg = r5Offset;
+	spill->label = NULL;
+	return spill;
+}
+
+
+void Instruction::renameSrcRegister(Register from, Register to)
+{
+	switch (instruction->op)
+	{
+		case OP_ADD :
+		case OP_AND :
+		case OP_ANDL :
+		case OP_DIV :
+		case OP_MUL :
+		case OP_OR :
+		case OP_ORL :
+		case OP_SUB :
+		case OP_LDR :
+			if (instruction->ops[1].reg == from)
+				instruction->ops[1].reg = to;
+			if (instruction->ops[2].reg == from)
+				instruction->ops[2].reg = to;
+			break;
+		case OP_NOT :
+		case OP_NOTL :
+		case OP_LDI :
+			if (instruction->ops[1].reg == from)
+				instruction->ops[1].reg = to;
+			break;
+		case OP_ST :
+		case OP_STI :
+		case OP_BR :
+			if (instruction->ops[0].reg == from)
+				instruction->ops[0].reg = to;
+			break;
+		case OP_STR :
+			if (instruction->ops[0].reg == from)
+				instruction->ops[0].reg = to;
+			if (instruction->ops[1].reg == from)
+				instruction->ops[1].reg = to;
+			if (instruction->ops[2].reg == from)
+				instruction->ops[2].reg = to;
+			break;
+		default :
+			break;
+	}
+}
+
+void Instruction::renameDestRegister(Register from, Register to)
+{
+	switch (instruction->op)
+	{
+		case OP_ADD :
+		case OP_AND :
+		case OP_ANDL :
+		case OP_DIV :
+		case OP_MUL :
+		case OP_OR :
+		case OP_ORL :
+		case OP_SUB :
+		case OP_SET :
+		case OP_NOT :
+		case OP_NOTL :
+		case OP_LD :
+		case OP_LDI :
+		case OP_LDR :
+		case OP_LEA :
+			if (instruction->ops[0].reg == from)
+				instruction->ops[0].reg = to;
+		default :
+			break;
+	}
+	if (destReg == from)
+		destReg = to;
+}
+
 void Instruction::initRegisterInfo()
 {
 	switch (instruction->op)
@@ -90,10 +214,10 @@ void Instruction::initRegisterInfo()
 			break;
 	}
 
-	if(destReg!=INVALID_REG)
+	if (destReg != INVALID_REG)
 		allReg.push_back(destReg);
 
-	for(RegisterSetIter iter= srcReg.begin(); iter!=srcReg.end(); iter++)
+	for (RegisterSetIter iter = srcReg.begin(); iter != srcReg.end(); iter++)
 		allReg.push_back(*iter);
 }
 
@@ -102,12 +226,16 @@ void Instruction::renameRegister(Register from, Register to)
 	for (int i = 0; i < 3; i++)
 	{
 		if (instruction->ops[i].t == op_reg && instruction->ops[i].reg == from)
+		{
 			instruction->ops[i].reg = to;
+
+		}
 	}
 }
 
 void Instruction::printInstruction(FILE* fptr)
 {
+	fprintf(fptr, "%d:", instructionNumber);
 	if (instruction->label)
 	{
 		fprintf(fptr, "%s:", instruction->label);
@@ -166,7 +294,7 @@ void Instruction::printInstruction(FILE* fptr)
 		default :
 			break;
 	}
-
+	fprintf(fptr, "\n");
 }
 
 void Instruction::printConditionCode(FILE *fptr, int ccode)

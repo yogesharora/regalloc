@@ -40,12 +40,12 @@ void InterferenceGraph::printAssignedRegisters() const
 {
 	for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
-		printf("R%d:", iter->first->getNo());
+		printf("R%d(%d):", iter->first->getNo(),iter->second.assignedReg);
 		const RegNeighbors &neighbors = iter->second.neighbors;
 		for (RegNeighborsIter iter2 = neighbors.begin(); iter2
 				!= neighbors.end(); iter2++)
 		{
-			RegGraphConstIter found = graph.find(iter->first);
+			RegGraphConstIter found = graph.find(*iter2);
 			printf(" R%d(%d)", (*iter2)->getNo(),found->second.assignedReg);
 		}
 		printf("\n");

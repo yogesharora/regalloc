@@ -26,7 +26,7 @@ class RegisterAllocator
 	Register minReg;
 	LiveRangeInfo liveRangeInfo;
 
-	typedef std::vector<Instruction* > Instructions;
+	typedef std::vector<Instruction*> Instructions;
 	typedef Instructions::iterator InstructionsIter;
 	Instructions instructions;
 
@@ -39,7 +39,10 @@ class RegisterAllocator
 		RegisterInfo* node;
 		bool spilled;
 
-		DeletedNode(RegisterInfo* n, bool s):  node(n), spilled(s) {}
+		DeletedNode(RegisterInfo* n, bool s) :
+			node(n), spilled(s)
+		{
+		}
 	};
 	typedef std::stack<DeletedNode> DeletedNodes;
 
@@ -47,13 +50,18 @@ class RegisterAllocator
 	void calcMaxMinRegisters(inst_t instruction);
 	void updateRegisterInfo(Instruction&);
 	bool isAllocatableRegister(Register no);
-	void deletNodesFromGraph(InterferenceGraph& graph, DeletedNodes& stack, int noRegs);
-	bool assignRegistersToGraph(InterferenceGraph& graph, DeletedNodes& stack, int startReg, int noOfRegs);
+	void deletNodesFromGraph(InterferenceGraph& graph, DeletedNodes& stack,
+			int noRegs);
+	bool assignRegistersToGraph(InterferenceGraph& graph, DeletedNodes& stack,
+			int startReg, int noOfRegs,int &spillCount);
+	void spillFillRegister(RegisterInfo& reg, int spillMemory);
+	void printInstructions();
 	RegisterAllocator(RegisterAllocator&);
+
 public:
 	RegisterAllocator(inst_t start);
 	~RegisterAllocator();
-	void allocateRegs(Register startReg, int noOfRegs, int noOfSpills );
+	void allocateRegs(Register startReg, int noOfRegs, int noOfSpills);
 
 };
 

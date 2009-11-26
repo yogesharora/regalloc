@@ -20,7 +20,7 @@ LiveRangeInfo::~LiveRangeInfo()
 void LiveRangeInfo::addRegister(RegisterInfo &reg)
 {
 	modified =  true;
-	const RegisterInfo::RegisterUsageSet& regUse = reg.getUserInstructions();
+	const RegisterInfo::RegisterUsageSet& regUse = reg.getAllInstructions();
 	for (RegisterInfo::RegisterUsageSetConstIter iter = regUse.begin(); iter
 			!= regUse.end(); iter++)
 	{

@@ -34,6 +34,7 @@ void RegisterAllocator::initProgramInfo()
 	{
 		calcMaxMinRegisters(cur);
 		Instruction* newInstruction = new Instruction(cur, ctr);
+		instructions.push_back(newInstruction);
 		updateRegisterInfo(*newInstruction);
 
 		ctr++;
@@ -64,11 +65,9 @@ bool RegisterAllocator::isAllocatableRegister(Register no)
 			return true;
 	}
 }
+
 void RegisterAllocator::updateRegisterInfo(Instruction& inst)
 {
-	instructions.reserve(inst.getNo() + 1);
-	instructions[inst.getNo()] = &inst;
-
 	const RegisterSet &srcRegs = inst.getSrcRegisters();
 	for (RegisterSetConstIter iter = srcRegs.begin(); iter != srcRegs.end(); iter++)
 	{
@@ -120,6 +119,7 @@ void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 		int noOfSpills)
 {
 	bool allAllocated = false;
+	int spillCount = 0;
 	do
 	{
 		InterferenceGraph& graph = liveRangeInfo.getInterferenceGraph();
@@ -128,11 +128,15 @@ void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 		DeletedNodes deletedNodes;
 		deletNodesFromGraph(graphCopy, deletedNodes, noOfRegs);
 		allAllocated = assignRegistersToGraph(graph, deletedNodes, startReg,
-				noOfRegs);
+				noOfRegs, spillCount);
 
-		if(allAllocated)
+		if (allAllocated)
 		{
 			graph.printAssignedRegisters();
+		}
+		else
+		{
+			printInstructions();
 		}
 	} while (!allAllocated);
 
@@ -149,8 +153,17 @@ void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 	 */
 }
 
+void RegisterAllocator::printInstructions()
+{
+	for (InstructionsIter iter = instructions.begin(); iter
+			!= instructions.end(); iter++)
+	{
+		(*iter)->printInstruction(stdout);
+	}
+}
+
 bool RegisterAllocator::assignRegistersToGraph(InterferenceGraph& graph,
-		DeletedNodes& stack, int startReg, int noOfRegs)
+		DeletedNodes& stack, int startReg, int noOfRegs, int &spillCount)
 {
 	while (stack.size() != 0)
 	{
@@ -158,16 +171,61 @@ bool RegisterAllocator::assignRegistersToGraph(InterferenceGraph& graph,
 		Register assignedRegister = graph.assignRegistersToNode(
 				*deletedNode.node, startReg, noOfRegs);
 
-		if(assignedRegister==INVALID_REG)
+		if (assignedRegister == INVALID_REG)
 		{
-			// spill
 
+			RegisterInfo* regToSpillFill = deletedNode.node;
+			spillFillRegister(*regToSpillFill, spillCount);
+
+			delete registerInfo[regToSpillFill->getNo()];
+			registerInfo.erase(regToSpillFill->getNo());
+
+			spillCount++;
 			return false;
 		}
 
 		stack.pop();
 	}
 	return true;
+}
+
+void RegisterAllocator::spillFillRegister(RegisterInfo& reg, int spillMemory)
+{
+	const RegisterInfo::RegisterUsageSet& useInsts = reg.getUseInstructions();
+	instructions.reserve(instructions.size() + useInsts.size());
+	printf("%d", (*instructions.begin())->getNo());
+	for (RegisterInfo::RegisterUsageSetConstIter iter = useInsts.begin(); iter
+			!= useInsts.end(); iter++)
+	{
+		Instruction& inst = *(*iter);
+		Instruction& fillInst = inst.fillInst(reg.getNo(), ++maxReg, -1
+				* spillMemory);
+
+		instructions.insert(instructions.begin() + inst.getNo(), &fillInst);
+
+		for (InstructionsIter iter2 = instructions.begin() + inst.getNo(); iter2
+				!= instructions.end(); iter2++)
+		{
+			(*iter2)->setNo((*iter2)->getNo() + 1);
+		}
+	}
+
+	const RegisterInfo::RegisterUsageSet& defInsts = reg.getDefInstructions();
+	for (RegisterInfo::RegisterUsageSetConstIter iter = defInsts.begin(); iter
+			!= defInsts.end(); iter++)
+	{
+		Instruction& inst = *(*iter);
+		Instruction& spillInst = inst.spillInst(reg.getNo(), ++maxReg, -1
+				* spillMemory);
+
+		instructions.insert(instructions.begin() + inst.getNo() + 1, &spillInst);
+
+		for (InstructionsIter iter2 = instructions.begin() + inst.getNo() + 2; iter2
+				!= instructions.end(); iter2++)
+		{
+			(*iter2)->setNo((*iter2)->getNo() + 1);
+		}
+	}
 }
 
 void RegisterAllocator::deletNodesFromGraph(InterferenceGraph& graph,

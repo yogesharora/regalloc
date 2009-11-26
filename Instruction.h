@@ -44,12 +44,23 @@ public:
 		return instructionNumber;
 	}
 
+	void setNo(int no)
+	{
+		instructionNumber = no;
+	}
+	Instruction& fillInst(int reg, int newReg,int r5Offset);
+
+	Instruction& spillInst(int reg, int newReg, int r5Offset);
 
 private:
 	Instruction(Instruction&);
 	void initRegisterInfo();
 	void printOperand(FILE *fptr, struct operand op);
 	void printConditionCode(FILE *fptr, int ccode);
+	void renameSrcRegister(Register from, Register to);
+	void renameDestRegister(Register from, Register to);
+	inst_t genFillInst(int newReg, int no);
+	inst_t genSpillInst(int newReg, int no);
 
 	inst_t instruction;
 	int instructionNumber;

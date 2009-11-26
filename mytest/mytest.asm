@@ -1,16 +1,16 @@
-	LDR  R11, R5,  0
-	LDR  R12, R5,  1
-	LDR  R13, R12, 4
-	SUB  R14, R11, 1
+	LDR  R11, R5,  #0
+	LDR  R12, R5,  #1
+	LDR  R13, R12, #4
+	SUB  R14, R11, #1
 	ADD  R15, R13, R14
-	LDR  R16, R15, 8
-	LDR  R17, R12, 9
+	LDR  R16, R15, #8
+	LDR  R17, R12, #9
 	ADD  R18, R14, R12
 	ADD  R19, R18, R16
 	NOT R20, R19
-	ADD  R21, R17, 7
+	ADD  R21, R17, #7
 	NOT R22, R21
-	STR  R20, R5,  3
-	STR  R21, R5,  6
-	STR  R22, R5,  8
+	STR  R20, R5,  #3
+	STR  R21, R5,  #6
+	STR  R22, R5,  #8
 
