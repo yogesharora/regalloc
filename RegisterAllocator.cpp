@@ -9,7 +9,6 @@
 #include <stack>
 
 using namespace std;
-// TODO do label handling on spills and fills
 RegisterAllocator::RegisterAllocator(inst_t start) :
 	instruction(start), maxReg(INVALID_REG), minReg(INVALID_REG),
 			liveRangeInfo(NULL)

@@ -29,6 +29,11 @@ Instruction& Instruction::fillInst(int reg, int newReg, int r5Offset)
 	destReg = INVALID_REG;
 	initRegisterInfo();
 	inst_t fill = genFillInst(newReg, r5Offset);
+	if(instruction->label!=NULL)
+	{
+		fill->label = instruction->label;
+		instruction->label = NULL;
+	}
 	Instruction *fillInst = new Instruction(fill, instructionNumber-1, true);
 	return *fillInst;
 }
