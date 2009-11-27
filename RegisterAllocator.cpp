@@ -11,7 +11,8 @@
 using namespace std;
 
 RegisterAllocator::RegisterAllocator(inst_t start) :
-	instruction(start), maxReg(INVALID_REG), minReg(INVALID_REG)
+	instruction(start), maxReg(INVALID_REG), minReg(INVALID_REG),
+			liveRangeInfo(NULL)
 {
 	initProgramInfo();
 }
@@ -23,6 +24,7 @@ RegisterAllocator::~RegisterAllocator()
 	{
 		delete *iter;
 	}
+	delete liveRangeInfo;
 }
 
 void RegisterAllocator::initProgramInfo()
@@ -41,11 +43,6 @@ void RegisterAllocator::initProgramInfo()
 		cur = cur->next;
 	}
 
-	for (RegistersIter iter = registerInfo.begin(); iter != registerInfo.end(); iter++)
-	{
-		if (isAllocatableRegister(iter->second->getNo()))
-			liveRangeInfo.addRegister(*(iter->second));
-	}
 	noOfInstructions = ctr;
 	noOfRegisters = (maxReg - minReg) + 1;
 }
@@ -122,11 +119,29 @@ void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 	int spillCount = 0;
 	do
 	{
-		InterferenceGraph& graph = liveRangeInfo.getInterferenceGraph();
+		// build live ranges
+		delete liveRangeInfo;
+		liveRangeInfo = new LiveRangeInfo();
+		for (RegistersIter iter = registerInfo.begin(); iter
+				!= registerInfo.end(); iter++)
+		{
+			if (isAllocatableRegister(iter->second->getNo()))
+				liveRangeInfo->addRegister(*(iter->second));
+		}
+
+		// build interference graph
+		InterferenceGraph& graph = liveRangeInfo->getInterferenceGraph();
 
 		InterferenceGraph graphCopy(graph);
 		DeletedNodes deletedNodes;
+
+		//optimistically remove nodes
 		deletNodesFromGraph(graphCopy, deletedNodes, noOfRegs);
+
+		// try to color
+		// if fail:
+		// choose reg with lowest cost to spill
+		// add spill code
 		allAllocated = assignRegistersToGraph(graph, deletedNodes, startReg,
 				noOfRegs, spillCount);
 
@@ -134,23 +149,8 @@ void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 		{
 			graph.printAssignedRegisters();
 		}
-		else
-		{
-			printInstructions();
-		}
-	} while (!allAllocated);
+	} while (!allAllocated && spillCount<noOfSpills);
 
-	/* determine live ranges using liveness analysis */
-	/* do:
-	 calculate cost of spilling
-	 build interference graph
-	 optimistically remove nodes
-	 try to color
-	 if fail:
-	 choose reg with lowest cost to spill
-	 add spill code
-	 while (fail)
-	 */
 }
 
 void RegisterAllocator::printInstructions()
@@ -175,12 +175,19 @@ bool RegisterAllocator::assignRegistersToGraph(InterferenceGraph& graph,
 		{
 
 			RegisterInfo* regToSpillFill = deletedNode.node;
-			spillFillRegister(*regToSpillFill, spillCount);
+			Instructions modifiedInst;
+			spillFillRegister(*regToSpillFill, spillCount++, modifiedInst);
+			printInstructions();
 
-			delete registerInfo[regToSpillFill->getNo()];
 			registerInfo.erase(regToSpillFill->getNo());
+			delete regToSpillFill;
 
-			spillCount++;
+			for (InstructionsIter iter = modifiedInst.begin(); iter
+					!= modifiedInst.end(); iter++)
+			{
+				updateRegisterInfo(*(*iter));
+			}
+
 			return false;
 		}
 
@@ -189,7 +196,8 @@ bool RegisterAllocator::assignRegistersToGraph(InterferenceGraph& graph,
 	return true;
 }
 
-void RegisterAllocator::spillFillRegister(RegisterInfo& reg, int spillMemory)
+void RegisterAllocator::spillFillRegister(RegisterInfo& reg, int spillMemory,
+		Instructions &modifiedInst)
 {
 	const RegisterInfo::RegisterUsageSet& useInsts = reg.getUseInstructions();
 	instructions.reserve(instructions.size() + useInsts.size());
@@ -208,6 +216,9 @@ void RegisterAllocator::spillFillRegister(RegisterInfo& reg, int spillMemory)
 		{
 			(*iter2)->setNo((*iter2)->getNo() + 1);
 		}
+
+		modifiedInst.push_back(&inst);
+		modifiedInst.push_back(&fillInst);
 	}
 
 	const RegisterInfo::RegisterUsageSet& defInsts = reg.getDefInstructions();
@@ -225,6 +236,9 @@ void RegisterAllocator::spillFillRegister(RegisterInfo& reg, int spillMemory)
 		{
 			(*iter2)->setNo((*iter2)->getNo() + 1);
 		}
+
+		modifiedInst.push_back(&inst);
+		modifiedInst.push_back(&spillInst);
 	}
 }
 

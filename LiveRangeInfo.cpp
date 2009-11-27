@@ -42,6 +42,12 @@ void LiveRangeInfo::addRegister(RegisterInfo &reg)
 	}
 }
 
+void LiveRangeInfo::removeRegister(RegisterInfo &reg)
+{
+	regInfo.erase(reg.getNo());
+	modified = true;
+}
+
 InterferenceGraph& LiveRangeInfo::getInterferenceGraph()
 {
 	if (modified)

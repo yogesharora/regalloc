@@ -46,6 +46,7 @@ public:
 	~LiveRangeInfo();
 
 	void addRegister(RegisterInfo &);
+	void removeRegister(RegisterInfo &);
 	InterferenceGraph& getInterferenceGraph();
 };
 

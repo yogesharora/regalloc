@@ -24,7 +24,7 @@ class RegisterAllocator
 	int noOfRegisters;
 	Register maxReg;
 	Register minReg;
-	LiveRangeInfo liveRangeInfo;
+	LiveRangeInfo *liveRangeInfo;
 
 	typedef std::vector<Instruction*> Instructions;
 	typedef Instructions::iterator InstructionsIter;
@@ -54,7 +54,7 @@ class RegisterAllocator
 			int noRegs);
 	bool assignRegistersToGraph(InterferenceGraph& graph, DeletedNodes& stack,
 			int startReg, int noOfRegs,int &spillCount);
-	void spillFillRegister(RegisterInfo& reg, int spillMemory);
+	void spillFillRegister(RegisterInfo& reg, int spillMemory, Instructions &modifiedInst);
 	void printInstructions();
 	RegisterAllocator(RegisterAllocator&);
 

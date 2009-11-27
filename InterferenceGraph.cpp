@@ -25,7 +25,7 @@ void InterferenceGraph::print() const
 {
 	for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
-		printf("R%d:", iter->first->getNo());
+		printf("R%d-cost=%d:", iter->first->getNo(), iter->first->getCost());
 		const RegNeighbors &neighbors = iter->second.neighbors;
 		for (RegNeighborsIter iter2 = neighbors.begin(); iter2
 				!= neighbors.end(); iter2++)
