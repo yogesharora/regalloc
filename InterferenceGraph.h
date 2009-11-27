@@ -74,6 +74,7 @@ public:
 	Register assignRegistersToNode(RegisterInfo& reg, int startReg, int noOfRegs);
 	void print() const;
 	void printAssignedRegisters() const;
+	void finalizeRegisterAssignment();
 
 	int getNoNodes()
 	{

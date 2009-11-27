@@ -148,9 +148,12 @@ void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 		if (allAllocated)
 		{
 			graph.printAssignedRegisters();
+			// now do the actual allocation
+			graph.finalizeRegisterAssignment();
 		}
 	} while (!allAllocated && spillCount<noOfSpills);
 
+	printInstructions();
 }
 
 void RegisterAllocator::printInstructions()

@@ -235,7 +235,6 @@ void Instruction::renameRegister(Register from, Register to)
 
 void Instruction::printInstruction(FILE* fptr)
 {
-	fprintf(fptr, "%d:", instructionNumber);
 	if (instruction->label)
 	{
 		fprintf(fptr, "%s:", instruction->label);

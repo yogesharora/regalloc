@@ -29,3 +29,17 @@ void RegisterInfo::addRegDef(Instruction& inst)
 	regAllSet.insert(&inst);
 	cost = 2 * regUseSet.size() + regDefSet.size();
 }
+
+void RegisterInfo::assignRegisterToInstructions(Register newReg)
+{
+	if (reg != newReg)
+	{
+		for (RegisterInfo::RegisterUsageSetIter iter = regAllSet.begin(); iter
+				!= regAllSet.end(); iter++)
+		{
+			Instruction& inst = *(*iter);
+
+			inst.renameRegister(reg, newReg);
+		}
+	}
+}

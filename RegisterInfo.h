@@ -24,6 +24,7 @@ public:
 
 	void addRegUse(Instruction&);
 	void addRegDef(Instruction&);
+	void assignRegisterToInstructions(Register newReg);
 
 	const RegisterUsageSet& getAllInstructions()
 	{
