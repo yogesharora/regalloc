@@ -16,7 +16,7 @@ class Instruction
 {
 
 public:
-	Instruction(inst_t inst, int no);
+	Instruction(inst_t inst, int no, bool del=false);
 
 	~Instruction();
 
@@ -65,7 +65,7 @@ private:
 	inst_t instruction;
 	int instructionNumber;
 	int destReg;
-	bool rootNode;
+	bool toDelete;
 	RegisterSet srcReg;
 	RegisterSet allReg;
 };

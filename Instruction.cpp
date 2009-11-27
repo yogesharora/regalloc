@@ -7,14 +7,18 @@
 
 #include "Instruction.h"
 
-Instruction::Instruction(inst_t inst, int no) :
-	instruction(inst), instructionNumber(no), destReg(INVALID_REG)
+Instruction::Instruction(inst_t inst, int no, bool del) :
+	instruction(inst), instructionNumber(no), destReg(INVALID_REG), toDelete(del)
 {
 	initRegisterInfo();
 }
 
 Instruction::~Instruction()
 {
+	if(toDelete)
+	{
+		delete instruction;
+	}
 }
 
 Instruction& Instruction::fillInst(int reg, int newReg, int r5Offset)
@@ -25,7 +29,7 @@ Instruction& Instruction::fillInst(int reg, int newReg, int r5Offset)
 	destReg = INVALID_REG;
 	initRegisterInfo();
 	inst_t fill = genFillInst(newReg, r5Offset);
-	Instruction *fillInst = new Instruction(fill, instructionNumber-1);
+	Instruction *fillInst = new Instruction(fill, instructionNumber-1, true);
 	return *fillInst;
 }
 
@@ -51,7 +55,7 @@ Instruction& Instruction::spillInst(int reg, int newReg, int r5Offset)
 	destReg = INVALID_REG;
 	initRegisterInfo();
 	inst_t spill = genSpillInst(newReg, r5Offset);
-	Instruction *spillInst = new Instruction(spill, instructionNumber+1);
+	Instruction *spillInst = new Instruction(spill, instructionNumber+1, true);
 	return *spillInst;
 }
 

@@ -15,6 +15,7 @@ LiveRangeInfo::LiveRangeInfo() :
 
 LiveRangeInfo::~LiveRangeInfo()
 {
+	delete graph;
 }
 
 void LiveRangeInfo::addRegister(RegisterInfo &reg)

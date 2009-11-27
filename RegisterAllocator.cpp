@@ -9,7 +9,7 @@
 #include <stack>
 
 using namespace std;
-
+// TODO do label handling on spills and fills
 RegisterAllocator::RegisterAllocator(inst_t start) :
 	instruction(start), maxReg(INVALID_REG), minReg(INVALID_REG),
 			liveRangeInfo(NULL)
@@ -23,6 +23,10 @@ RegisterAllocator::~RegisterAllocator()
 			!= instructions.end(); iter++)
 	{
 		delete *iter;
+	}
+	for (RegistersIter iter = registerInfo.begin(); iter != registerInfo.end(); iter++)
+	{
+		delete iter->second;
 	}
 	delete liveRangeInfo;
 }
@@ -151,7 +155,7 @@ void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 			// now do the actual allocation
 			graph.finalizeRegisterAssignment();
 		}
-	} while (!allAllocated && spillCount<noOfSpills);
+	} while (!allAllocated && spillCount < noOfSpills);
 
 	printInstructions();
 }
