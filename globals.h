@@ -20,6 +20,14 @@ typedef int Register;
 typedef std::vector<Register> RegisterSet;
 typedef RegisterSet::iterator RegisterSetIter;
 typedef RegisterSet::const_iterator RegisterSetConstIter;
+#define DEFAULT_K_VALUE 3
 
+//#define VERBOSE
+
+#ifdef VERBOSE
+#define PRINTF(...) printf(__VA_ARGS__)
+#else
+#define PRINTF( ...)
+#endif
 
 #endif /* GLOBALS_H_ */

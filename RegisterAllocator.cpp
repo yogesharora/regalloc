@@ -8,6 +8,8 @@
 #include "RegisterAllocator.h"
 #include <stack>
 
+extern int verbose;
+
 using namespace std;
 RegisterAllocator::RegisterAllocator(inst_t start) :
 	instruction(start), maxReg(INVALID_REG), minReg(INVALID_REG),
@@ -115,7 +117,7 @@ void RegisterAllocator::calcMaxMinRegisters(inst_t instruction)
 	}
 }
 
-void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
+bool RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 		int noOfSpills)
 {
 	bool allAllocated = false;
@@ -150,21 +152,26 @@ void RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 
 		if (allAllocated)
 		{
-			graph.printAssignedRegisters();
+			if(verbose)
+				graph.printAssignedRegisters(stdout);
 			// now do the actual allocation
 			graph.finalizeRegisterAssignment();
+			return true;
 		}
 	} while (!allAllocated && spillCount < noOfSpills);
 
-	printInstructions();
+	if(spillCount>=noOfSpills)
+	{
+		return false;
+	}
 }
 
-void RegisterAllocator::printInstructions()
+void RegisterAllocator::printInstructions(FILE* fptr)
 {
 	for (InstructionsIter iter = instructions.begin(); iter
 			!= instructions.end(); iter++)
 	{
-		(*iter)->printInstruction(stdout);
+		(*iter)->printInstruction(fptr);
 	}
 }
 
@@ -183,7 +190,6 @@ bool RegisterAllocator::assignRegistersToGraph(InterferenceGraph& graph,
 			RegisterInfo* regToSpillFill = deletedNode.node;
 			Instructions modifiedInst;
 			spillFillRegister(*regToSpillFill, spillCount++, modifiedInst);
-			printInstructions();
 
 			registerInfo.erase(regToSpillFill->getNo());
 			delete regToSpillFill;
@@ -207,7 +213,6 @@ void RegisterAllocator::spillFillRegister(RegisterInfo& reg, int spillMemory,
 {
 	const RegisterInfo::RegisterUsageSet& useInsts = reg.getUseInstructions();
 	instructions.reserve(instructions.size() + useInsts.size());
-	printf("%d", (*instructions.begin())->getNo());
 	for (RegisterInfo::RegisterUsageSetConstIter iter = useInsts.begin(); iter
 			!= useInsts.end(); iter++)
 	{
@@ -253,25 +258,25 @@ void RegisterAllocator::deletNodesFromGraph(InterferenceGraph& graph,
 {
 	while (graph.getNoNodes() != 0)
 	{
-		printf("graph size %d\n", graph.getNoNodes());
+		PRINTF("graph size %d\n", graph.getNoNodes());
 		graph.print();
 
 		RegisterInfo* node = graph.removeNodeWithDegreeLessThan(noOfRegs);
 		if (node != NULL)
 		{
-			printf("register removed %d\n", node->getNo());
+			PRINTF("register removed %d\n", node->getNo());
 			stack.push(DeletedNode(node, false));
 		}
 		else
 		{
 
 			node = graph.removeSpillable();
-			printf("register spilled %d with cost %d\n", node->getNo(),
+			PRINTF("register spilled %d with cost %d\n", node->getNo(),
 					node->getCost());
 			stack.push(DeletedNode(node, true));
 		}
 	}
-	printf("graph size %d\n", graph.getNoNodes());
+	PRINTF("graph size %d\n", graph.getNoNodes());
 	graph.print();
 }
 

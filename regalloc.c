@@ -10,6 +10,7 @@ extern int yyerror(...);
 extern "C" int yywrap();
 extern int yyparse();
 extern int cmdlex();
+extern int k;
 
 void c_regalloc(void);
 void codegen_entry(FILE *fptr);
@@ -41,10 +42,6 @@ int main(int argc, char **argv)
 void c_regalloc()
 {
 	/* file pointer to dump output code */
-	FILE *fptr = fopen(outfile, "w");
-
-	codegen_entry(fptr);
-
 	yywrap();
 	yyparse();
 
@@ -61,20 +58,23 @@ void c_regalloc()
 	/************************************************************************/
 	/************************************************************************/
 	/*    Call your implementation from here                                */
-	RegisterAllocator reg(instList);
-	reg.allocateRegs(10, 3, 10);
+	RegisterAllocator reg( instList);
+	if (k == 0)
+		k = DEFAULT_K_VALUE;
+	if (reg.allocateRegs(10, k, 10))
+	{
+		FILE *fptr = fopen(outfile, "w");
+		codegen_entry(fptr);
+		reg.printInstructions(fptr);
+		codegen_exit(fptr);
+		fclose(fptr); /* close file */
+	}
+	else
+	{
+		fprintf(stdout, "unable to find an allocation");
+	}
 
 
-
-	/************************************************************************/
-	/************************************************************************/
-	/************************************************************************/
-	/************************************************************************/
-
-	print_list(fptr, instList); /* dump code to output file */
-
-	codegen_exit(fptr);
-	fclose(fptr); /* close file */
 }
 
 /**************************************************************************

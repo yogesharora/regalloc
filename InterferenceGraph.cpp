@@ -25,30 +25,23 @@ void InterferenceGraph::print() const
 {
 	for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
-		printf("R%d-cost=%d:", iter->first->getNo(), iter->first->getCost());
+		PRINTF("R%d-cost=%d:", iter->first->getNo(), iter->first->getCost());
 		const RegNeighbors &neighbors = iter->second.neighbors;
 		for (RegNeighborsIter iter2 = neighbors.begin(); iter2
 				!= neighbors.end(); iter2++)
 		{
-			printf(" R%d", (*iter2)->getNo());
+			PRINTF(" R%d", (*iter2)->getNo());
 		}
-		printf("\n");
+		PRINTF("\n");
 	}
 }
 
-void InterferenceGraph::printAssignedRegisters() const
+void InterferenceGraph::printAssignedRegisters(FILE* fptr) const
 {
 	for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
-		printf("R%d(%d):", iter->first->getNo(),iter->second.assignedReg);
-		const RegNeighbors &neighbors = iter->second.neighbors;
-		for (RegNeighborsIter iter2 = neighbors.begin(); iter2
-				!= neighbors.end(); iter2++)
-		{
-			RegGraphConstIter found = graph.find(*iter2);
-			printf(" R%d(%d)", (*iter2)->getNo(),found->second.assignedReg);
-		}
-		printf("\n");
+		fprintf(fptr,"R%d - %d", iter->first->getNo(),iter->second.assignedReg);
+		fprintf(fptr, "\n");
 	}
 }
 

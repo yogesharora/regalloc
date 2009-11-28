@@ -55,14 +55,14 @@ class RegisterAllocator
 	bool assignRegistersToGraph(InterferenceGraph& graph, DeletedNodes& stack,
 			int startReg, int noOfRegs,int &spillCount);
 	void spillFillRegister(RegisterInfo& reg, int spillMemory, Instructions &modifiedInst);
-	void printInstructions();
+
 	RegisterAllocator(RegisterAllocator&);
 
 public:
 	RegisterAllocator(inst_t start);
 	~RegisterAllocator();
-	void allocateRegs(Register startReg, int noOfRegs, int noOfSpills);
-
+	bool allocateRegs(Register startReg, int noOfRegs, int noOfSpills);
+	void printInstructions(FILE* fptr);
 };
 
 #endif /* REGISTERALLOCATOR_H_ */
