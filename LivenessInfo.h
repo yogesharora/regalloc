@@ -29,6 +29,8 @@ class LivenessInfo
 	SuccesorVector successor;
 	LivenessInfo(LivenessInfo&);
 
+	bool isAllocatableRegister(Register no);
+
 public:
 	LivenessInfo(int noOfRegsister, int memSize, int minMem);
 	~LivenessInfo();
@@ -46,6 +48,8 @@ public:
 	// returns true if liveness has changed
 	bool calculateLiveliness();
 	bool isDeadCode();
+
+	RegisterSet getLiveRegisters();
 };
 
 #endif /* LIVENESSINFO_H_ */

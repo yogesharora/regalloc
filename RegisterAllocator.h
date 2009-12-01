@@ -25,12 +25,8 @@ class RegisterAllocator
 	Register maxReg;
 	Register minReg;
 
-	typedef std::vector<Instruction*> Instructions;
-	typedef Instructions::iterator InstructionsIter;
 	Instructions instructions;
 
-	typedef std::map<Register, RegisterInfo*> Registers;
-	typedef Registers::iterator RegistersIter;
 	Registers registerInfo;
 
 	struct DeletedNode

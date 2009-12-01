@@ -49,6 +49,7 @@ public:
 
 	void analyse();
 	void print();
+	RegisterSet getLiveRegisters(int instNo);
 };
 
 #endif /* LIVENESSANALYSIS_H_ */

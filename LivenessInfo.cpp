@@ -125,23 +125,28 @@ void LivenessInfo::print()
 //	PRINTF("} ");
 
 	PRINTF("liveout - {");
-	liveOut.print("R%d ", 0, noRegisters);
-	liveOut.print("Mem[R5%d] ", noRegisters, noRegisters + (0 - minMemory),
-			minMemory);
-	liveOut.print("Mem[R5+%d] ", noRegisters + (0 - minMemory), noRegisters
-			+ memorySize, 0);
-	liveOut.print("$ ", noRegisters + memorySize, noRegisters + memorySize + 1);
+	RegisterSet reg;
+	for(int i=0;i<noRegisters;i++)
+	{
+		if(isAllocatableRegister(i))
+		{
+			if(liveOut[i]==BIT_ON)
+				PRINTF("R%d ", i);
+		}
+	}
+//		return reg;
+//	liveOut.print("R%d ", 0, noRegisters);
 	PRINTF("} ");
 
-	PRINTF("livein - {");
-	liveIn.print("R%d ", 0, noRegisters);
-	liveIn.print("Mem[R5%d] ", noRegisters, noRegisters + (0 - minMemory),
-			minMemory);
-	liveIn.print("Mem[R5+%d] ", noRegisters + (0 - minMemory), noRegisters
-			+ memorySize, 0);
-	liveIn.print("$ ", noRegisters + memorySize, noRegisters + memorySize + 1,
-			0);
-	PRINTF("}");
+//	PRINTF("livein - {");
+//	liveIn.print("R%d ", 0, noRegisters);
+//	liveIn.print("Mem[R5%d] ", noRegisters, noRegisters + (0 - minMemory),
+//			minMemory);
+//	liveIn.print("Mem[R5+%d] ", noRegisters + (0 - minMemory), noRegisters
+//			+ memorySize, 0);
+//	liveIn.print("$ ", noRegisters + memorySize, noRegisters + memorySize + 1,
+//			0);
+//	PRINTF("}");
 }
 
 bool LivenessInfo::isDeadCode()
@@ -152,4 +157,34 @@ bool LivenessInfo::isDeadCode()
 			return true;
 	}
 	return false;
+}
+
+RegisterSet LivenessInfo::getLiveRegisters()
+{
+	RegisterSet reg;
+	for(int i=0;i<noRegisters;i++)
+	{
+		if(isAllocatableRegister(i))
+		{
+			if(liveOut[i]==BIT_ON)
+				reg.push_back(i);
+		}
+	}
+	return reg;
+}
+
+bool LivenessInfo::isAllocatableRegister(Register no)
+{
+	switch (no)
+	{
+		case R0 :
+		case R4 :
+		case R5 :
+		case R6 :
+		case R7 :
+			return false;
+			break;
+		default :
+			return true;
+	}
 }

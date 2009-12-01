@@ -287,3 +287,8 @@ int LivenessAnalysis::getHighestReg(inst_t instruction)
 	}
 	return highestReg;
 }
+
+RegisterSet LivenessAnalysis::getLiveRegisters(int instNo)
+{
+	return liveInfo[instNo]->getLiveRegisters();
+}

@@ -46,7 +46,7 @@ void RegisterAllocator::initProgramInfo()
 		cur = cur->next;
 	}
 
-	noOfInstructions = ctr;
+	noOfInstructions = instructions.size();
 	noOfRegisters = (maxReg - minReg) + 1;
 }
 
@@ -123,7 +123,7 @@ bool RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 	do
 	{
 		// calulate liveness and live ranges
-		LiveRangeInfo liveRangeInfo(instructions);
+		LiveRangeInfo liveRangeInfo(instructions, registerInfo);
 
 		// build interference graph
 		InterferenceGraph& graph = liveRangeInfo.getInterferenceGraph();

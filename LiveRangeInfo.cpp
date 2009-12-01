@@ -8,8 +8,11 @@
 #include "globals.h"
 #include "LiveRangeInfo.h"
 
-LiveRangeInfo::LiveRangeInfo(Instructions &inst) : instructions(inst)
+LiveRangeInfo::LiveRangeInfo(Instructions &inst,  Registers& reg) :
+	instructions(inst), liveAnalysis(inst), registers(reg)
 {
+	liveAnalysis.analyse();
+	liveAnalysis.print();
 }
 
 LiveRangeInfo::~LiveRangeInfo()
@@ -18,39 +21,23 @@ LiveRangeInfo::~LiveRangeInfo()
 
 InterferenceGraph& LiveRangeInfo::getInterferenceGraph()
 {
-//		// build interference info
-//		int instructionSize = maxInstNumber - minInstNumber + 1;
-//		RegRanges liveRange(instructionSize);
-//		for (int i = 0; i < instructionSize; i++)
-//		{
-//			liveRange.push_back(RegisterInfoSet());
-//		}
-//
-//		for (RegRangeInfoIter iter = regInfo.begin(); iter != regInfo.end(); iter++)
-//		{
-//			RegRange &range = iter->second;
-//			liveRange[range.start - minInstNumber].insert(range.reg);
-//			liveRange[range.end - minInstNumber].insert(range.reg);
-//		}
-//
-//		// build graph
-//		for (RegRangeInfoIter iter = regInfo.begin(); iter != regInfo.end(); iter++)
-//		{
-//			RegRange &range = iter->second;
-//			for (int i = range.start + 1; i < range.end; i++)
-//			{
-//				RegisterInfoSet& interferingRegs = liveRange[i - minInstNumber];
-//				for (RegisterInfoSetIter iter2 = interferingRegs.begin(); iter2
-//						!= interferingRegs.end(); iter2++)
-//				{
-//					graph->addInterference(*range.reg, **iter2);
-//				}
-//			}
-//		}
-//
-//		// create register queues
-//		graph->createRegisterQueues();
-//	}
-//	return *graph;
+	for (InstructionsIter iter = instructions.begin(); iter
+			!= instructions.end(); iter++)
+	{
+		RegisterSet regs = liveAnalysis.getLiveRegisters((*iter)->getNo());
+		for (RegisterSetIter regIter = regs.begin(); regIter != regs.end(); regIter++)
+		{
+			RegisterInfo& v1 = *(registers[*regIter]);
+			for (RegisterSetIter interferenceIter = regIter + 1; interferenceIter
+					!= regs.end(); interferenceIter++)
+			{
+				RegisterInfo& v2 = *(registers[*interferenceIter]);
+				graph.addInterference(v1, v2);
+			}
+		}
+	}
+
+	graph.createRegisterQueues();
+	return graph;
 }
 

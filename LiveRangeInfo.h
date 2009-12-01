@@ -12,6 +12,7 @@
 #include "Instruction.h"
 #include "InterferenceGraph.h"
 #include "RegisterInfo.h"
+#include "LivenessAnalysis.h"
 #include "typedefs.h"
 #include <vector>
 #include <map>
@@ -19,30 +20,15 @@
 
 class LiveRangeInfo
 {
-	struct RegRange {
-		int start;
-		int end;
-		RegisterInfo *reg;
-
-		RegRange() : start(-1), end(-1) {}
-	};
-
-	typedef std::map<Register, RegRange> RegRangeInfo;
-	typedef RegRangeInfo::iterator RegRangeInfoIter;
-
-	typedef std::set<RegisterInfo*> RegisterInfoSet;
-	typedef RegisterInfoSet::iterator RegisterInfoSetIter;
-	typedef std::vector<RegisterInfoSet> RegRanges;
-
-	RegRangeInfo regInfo;
-
 	InterferenceGraph graph;
 
 	LiveRangeInfo(LiveRangeInfo&);
 
 	Instructions &instructions;
+	LivenessAnalysis liveAnalysis;
+	Registers &registers;
 public:
-	LiveRangeInfo(Instructions &instructions);
+	LiveRangeInfo(Instructions &instructions, Registers& registers);
 	~LiveRangeInfo();
 	InterferenceGraph& getInterferenceGraph();
 };
