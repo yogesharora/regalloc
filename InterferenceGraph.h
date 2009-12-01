@@ -12,6 +12,7 @@
 #include <set>
 #include <map>
 #include <list>
+#include "typedefs.h"
 
 class InterferenceGraph
 {
@@ -73,7 +74,7 @@ public:
 	RegisterInfo* removeSpillable();
 	Register assignRegistersToNode(RegisterInfo& reg, int startReg, int noOfRegs);
 	void print() const;
-	void printAssignedRegisters(FILE* fptr) const;
+	void getMapping(Mapping& mapping) const;
 	void finalizeRegisterAssignment();
 
 	int getNoNodes()

@@ -12,7 +12,8 @@ extern int verbose;
 
 using namespace std;
 RegisterAllocator::RegisterAllocator(inst_t start) :
-	instruction(start), maxReg(INVALID_REG), minReg(INVALID_REG)
+	instruction(start), maxReg(INVALID_REG), originalMaxReg(INVALID_REG),
+			minReg(INVALID_REG)
 {
 	initProgramInfo();
 }
@@ -48,6 +49,7 @@ void RegisterAllocator::initProgramInfo()
 
 	noOfInstructions = instructions.size();
 	noOfRegisters = (maxReg - minReg) + 1;
+	originalMaxReg = maxReg;
 }
 
 bool RegisterAllocator::isAllocatableRegister(Register no)
@@ -115,6 +117,49 @@ void RegisterAllocator::calcMaxMinRegisters(inst_t instruction)
 	}
 }
 
+void RegisterAllocator::verbosePrint(InterferenceGraph & graph)
+{
+	if (verbose)
+	{
+		graph.getMapping(mapping);
+		MappingIter iter = mapping.begin();
+		for (; iter != mapping.end(); iter++)
+		{
+			int from = iter->first;
+			if (from > originalMaxReg)
+			{
+				break;
+			}
+			int to = iter->second;
+			if (to > 0)
+				fprintf(stdout, "%d: %d", from, to);
+			else if (to < 0)
+				fprintf(stdout, "%d: Mem[R5%d]", from, to);
+			else
+				fprintf(stdout, "%d: Mem[R5+0]", from);
+
+			fprintf(stdout, "\n");
+
+
+		}
+
+		fprintf(stdout, "registers created after spill fill\n");
+		for (; iter != mapping.end(); iter++)
+		{
+			int from = iter->first;
+			int to = iter->second;
+			if (to > 0)
+				fprintf(stdout, "%d: %d", from, to);
+			else if (to < 0)
+				fprintf(stdout, "%d: Mem[R5%d]", from, to);
+			else
+				fprintf(stdout, "%d: Mem[R5+0]", from);
+
+			fprintf(stdout, "\n");
+		}
+	}
+}
+
 bool RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 		int noOfSpills)
 {
@@ -143,18 +188,13 @@ bool RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 
 		if (allAllocated)
 		{
-			if(verbose)
-				graph.printAssignedRegisters(stdout);
-			// now do the actual allocation
+			verbosePrint(graph);
 			graph.finalizeRegisterAssignment();
 			return true;
 		}
 	} while (!allAllocated && spillCount < noOfSpills);
 
-	if(spillCount>=noOfSpills)
-	{
-		return false;
-	}
+	return false;
 }
 
 void RegisterAllocator::printInstructions(FILE* fptr)
@@ -180,8 +220,9 @@ bool RegisterAllocator::assignRegistersToGraph(InterferenceGraph& graph,
 
 			RegisterInfo* regToSpillFill = deletedNode.node;
 			Instructions modifiedInst;
-			spillFillRegister(*regToSpillFill, spillCount++, modifiedInst);
-
+			spillFillRegister(*regToSpillFill, spillCount, modifiedInst);
+			mapping[regToSpillFill->getNo()] = -1 * spillCount;
+			spillCount++;
 			registerInfo.erase(regToSpillFill->getNo());
 			delete regToSpillFill;
 
@@ -266,8 +307,7 @@ void RegisterAllocator::deletNodesFromGraph(InterferenceGraph& graph,
 					node->getCost());
 			stack.push(DeletedNode(node, true));
 		}
-	}
-	PRINTF("graph size %d\n", graph.getNoNodes());
+	} PRINTF("graph size %d\n", graph.getNoNodes());
 	graph.print();
 }
 

@@ -16,6 +16,7 @@
 #include <vector>
 #include <map>
 #include <stack>
+#include "typedefs.h"
 
 class RegisterAllocator
 {
@@ -23,7 +24,10 @@ class RegisterAllocator
 	int noOfInstructions;
 	int noOfRegisters;
 	Register maxReg;
+	Register originalMaxReg;
 	Register minReg;
+
+	Mapping mapping;
 
 	Instructions instructions;
 
@@ -52,6 +56,7 @@ class RegisterAllocator
 	void spillFillRegister(RegisterInfo& reg, int spillMemory, Instructions &modifiedInst);
 
 	RegisterAllocator(RegisterAllocator&);
+    void verbosePrint(InterferenceGraph & graph);
 
 public:
 	RegisterAllocator(inst_t start);

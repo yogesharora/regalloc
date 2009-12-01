@@ -21,4 +21,15 @@ typedef std::map<Register, RegisterInfo*> Registers;
 typedef Registers::iterator RegistersIter;
 typedef Registers::const_iterator RegistersConstIter;
 
+struct mappingCompare
+{
+	bool operator()(const Register a, const Register b)
+	{
+		return a < b;
+	}
+};
+typedef std::map<Register, int, mappingCompare> Mapping;
+typedef Mapping::iterator MappingIter;
+
+
 #endif /* TYPEDEFS_H_ */

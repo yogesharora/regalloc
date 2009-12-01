@@ -30,7 +30,7 @@ typedef RegisterSet::const_iterator RegisterSetConstIter;
 #define NO_REGISTER -1
 
 
-#define VERBOSE
+//#define VERBOSE
 
 #ifdef VERBOSE
 #define PRINTF(...) fprintf(stdout, __VA_ARGS__)

@@ -71,7 +71,7 @@ void c_regalloc()
 	}
 	else
 	{
-		fprintf(stdout, "unable to find an allocation");
+		fprintf(stdout, "unable to find an allocation\n");
 	}
 
 

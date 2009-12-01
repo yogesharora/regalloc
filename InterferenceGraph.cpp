@@ -36,12 +36,11 @@ void InterferenceGraph::print() const
 	}
 }
 
-void InterferenceGraph::printAssignedRegisters(FILE* fptr) const
+void InterferenceGraph::getMapping(Mapping& mapping) const
 {
 	for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
-		fprintf(fptr,"R%d - %d", iter->first->getNo(),iter->second.assignedReg);
-		fprintf(fptr, "\n");
+		mapping[iter->first->getNo()] = iter->second.assignedReg;
 	}
 }
 
