@@ -48,6 +48,12 @@ public:
 	{
 		instructionNumber = no;
 	}
+
+	inst_t getInst() const
+	{
+		return instruction;
+	}
+
 	Instruction& fillInst(int reg, int newReg,int r5Offset);
 
 	Instruction& spillInst(int reg, int newReg, int r5Offset);

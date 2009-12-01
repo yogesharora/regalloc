@@ -1,5 +1,5 @@
 /*
- * livenessAnalysis.cpp
+ * LivenessAnalysis.cpp
  *
  *  Created on: Oct 9, 2009
  *      Author: yogesh
@@ -9,18 +9,19 @@
 #include "globals.h"
 #include "string.h"
 
-livenessAnalysis::livenessAnalysis(Instruction& inst)
+LivenessAnalysis::LivenessAnalysis(const Instructions& inst) :
+	instructions(inst)
 {
 	initProgramInfo();
 
 }
 
-livenessAnalysis::~livenessAnalysis()
+LivenessAnalysis::~LivenessAnalysis()
 {
 	deleteOldLiveInfo();
 }
 
-void livenessAnalysis::deleteOldLiveInfo()
+void LivenessAnalysis::deleteOldLiveInfo()
 {
 	if (liveInfo != NULL)
 	{
@@ -33,14 +34,13 @@ void livenessAnalysis::deleteOldLiveInfo()
 	}
 }
 
-void livenessAnalysis::analyse()
+void LivenessAnalysis::analyse()
 {
 	initLivelinessInfo();
 	calculateLiveliness();
 }
 
-
-void livenessAnalysis::calculateLiveliness()
+void LivenessAnalysis::calculateLiveliness()
 {
 	bool changing = true;
 	while (changing)
@@ -54,7 +54,7 @@ void livenessAnalysis::calculateLiveliness()
 	}
 }
 
-void livenessAnalysis::print()
+void LivenessAnalysis::print()
 {
 	for (int i = 0; i < noInstruction; i++)
 	{
@@ -64,50 +64,52 @@ void livenessAnalysis::print()
 	}
 }
 
-void livenessAnalysis::initLivelinessInfo()
+void LivenessAnalysis::initLivelinessInfo()
 {
-////	liveInfo = new livenessInfo*[noInstruction];
-////	for (int i = 0; i < noInstruction; i++)
-////	{
-////		liveInfo[i] = new livenessInfo(noRegisters, memorySize, minMemOffset);
-////	}
-////
-////	inst_t head = instructions;
-////	int ctr = 0;
-////
-////	// get label info
-////	while (head)
-////	{
-////		if (head->label != NULL)
-////			labelMap[head->label] = ctr;
-////
-////		head = head->next;
-////		ctr++;
-////	}
-////	head = instructions;
-////
-////	 ctr = 0;
-////	while (head)
-////	{
-////		livenessInfo *info = liveInfo[ctr];
-////		// create use def info
-////		createUseDefInfo(*info, head);
-////
-////		// create successor info
-////		createSuccessorInfo(*info, head, ctr);
-////
-////		//this is a last element
-////		if (head->next == NULL)
-////		{
-////			info->setLastInstruction();
-////		}
-////
-////		head = head->next;
-////		ctr++;
-//	}
+	liveInfo = new LivenessInfo*[noInstruction];
+	for (int i = 0; i < noInstruction; i++)
+	{
+		liveInfo[i] = new LivenessInfo(noRegisters, memorySize, minMemOffset);
+	}
+
+	int ctr = 0;
+
+	// get label info
+	for (InstructionsConstIter iter = instructions.begin(); iter
+			!= instructions.end(); iter++)
+	{
+		inst_t inst = (*iter)->getInst();
+
+		if (inst->label != NULL)
+			labelMap[inst->label] = ctr;
+
+		ctr++;
+	}
+
+	ctr = 0;
+	for (InstructionsConstIter iter = instructions.begin(); iter
+			!= instructions.end(); iter++)
+	{
+		inst_t inst = (*iter)->getInst();
+
+		LivenessInfo *info = liveInfo[ctr];
+		// create use def info
+		createUseDefInfo(*info, inst);
+
+		// create successor info
+		createSuccessorInfo(*info, inst, ctr);
+
+		// this is a last element
+		if (iter == instructions.begin() + instructions.size())
+		{
+			info->setLastInstruction();
+		}
+
+		ctr++;
+	}
 }
 
-void livenessAnalysis::createSuccessorInfo(LivenessInfo &info, inst_t inst,
+void LivenessAnalysis::createSuccessorInfo(LivenessInfo &info, inst_t inst,
 		int index)
 {
 	int brLabelIndex, braLabelIndex;
@@ -128,7 +130,7 @@ void livenessAnalysis::createSuccessorInfo(LivenessInfo &info, inst_t inst,
 
 }
 
-void livenessAnalysis::createUseDefInfo(LivenessInfo &info, inst_t inst)
+void LivenessAnalysis::createUseDefInfo(LivenessInfo &info, inst_t inst)
 {
 	int useReg1 = NO_REGISTER;
 	int useReg2 = NO_REGISTER;
@@ -226,32 +228,32 @@ void livenessAnalysis::createUseDefInfo(LivenessInfo &info, inst_t inst)
 	}
 }
 
-int livenessAnalysis::memoryToOffset(int mem)
+int LivenessAnalysis::memoryToOffset(int mem)
 {
 	return mem - minMemOffset;
 }
 
-void livenessAnalysis::initProgramInfo()
+void LivenessAnalysis::initProgramInfo()
 {
-	inst_t head = instructions;
 	int ctr = 0;
 	int maxRegister = REGS_MINSIZE;
 	int minoffset = 0;
 	int maxOffset = MEM_MINSIZE;
 
-	while (head)
+	for (InstructionsConstIter iter = instructions.begin(); iter
+			!= instructions.end(); iter++)
 	{
-		int reg = getHighestReg(head);
+		inst_t inst = (*iter)->getInst();
+		int reg = getHighestReg(inst);
 		if (reg > maxRegister)
 			maxRegister = reg;
 
-		int offset = getR5Offset(head);
+		int offset = getR5Offset(inst);
 		if (offset < minoffset)
 			minoffset = offset;
 		else if (offset > maxOffset)
 			maxOffset = offset;
 
-		head = head->next;
 		ctr++;
 	}
 
@@ -261,7 +263,7 @@ void livenessAnalysis::initProgramInfo()
 	minMemOffset = minoffset;
 }
 
-int livenessAnalysis::getR5Offset(inst_t instruction)
+int LivenessAnalysis::getR5Offset(inst_t instruction)
 {
 	int memOffset = 0;
 	if (instruction->ops[1].t == op_reg && instruction->ops[1].reg == R5)
@@ -272,7 +274,7 @@ int livenessAnalysis::getR5Offset(inst_t instruction)
 	return memOffset;
 }
 
-int livenessAnalysis::getHighestReg(inst_t instruction)
+int LivenessAnalysis::getHighestReg(inst_t instruction)
 {
 	int highestReg = 0;
 	for (int i = 0; i < 3; i++)

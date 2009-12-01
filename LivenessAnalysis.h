@@ -1,5 +1,5 @@
 /*
- * livenessAnalysis.h
+ * LivenessAnalysis.h
  *
  *  Created on: Oct 9, 2009
  *      Author: yogesh
@@ -20,9 +20,8 @@ struct strCmp
 	}
 };
 
-class livenessAnalysis
+class LivenessAnalysis
 {
-	inst_t instructions;
 	typedef std::map<char*, int, strCmp> LabelMap;
 	LabelMap labelMap;
 	int noRegisters;
@@ -42,9 +41,11 @@ class livenessAnalysis
 	bool deleteFromList(inst_t cur, inst_t prev);
 	void makeNop(inst_t cur);
 	void deleteOldLiveInfo();
+
+	const Instructions& instructions;
 public:
-	livenessAnalysis(Instruction& inst);
-	~livenessAnalysis();
+	LivenessAnalysis(const Instructions& inst);
+	~LivenessAnalysis();
 
 	void analyse();
 	void print();
