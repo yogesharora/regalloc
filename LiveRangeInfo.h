@@ -12,6 +12,7 @@
 #include "Instruction.h"
 #include "InterferenceGraph.h"
 #include "RegisterInfo.h"
+#include "typedefs.h"
 #include <vector>
 #include <map>
 #include <set>
@@ -35,18 +36,14 @@ class LiveRangeInfo
 
 	RegRangeInfo regInfo;
 
-	InterferenceGraph *graph;
-	bool modified;
-	int minInstNumber;
-	int maxInstNumber;
+	InterferenceGraph graph;
 
 	LiveRangeInfo(LiveRangeInfo&);
-public:
-	LiveRangeInfo();
-	~LiveRangeInfo();
 
-	void addRegister(RegisterInfo &);
-	void removeRegister(RegisterInfo &);
+	Instructions &instructions;
+public:
+	LiveRangeInfo(Instructions &instructions);
+	~LiveRangeInfo();
 	InterferenceGraph& getInterferenceGraph();
 };
 

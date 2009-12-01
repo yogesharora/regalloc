@@ -12,8 +12,7 @@ extern int verbose;
 
 using namespace std;
 RegisterAllocator::RegisterAllocator(inst_t start) :
-	instruction(start), maxReg(INVALID_REG), minReg(INVALID_REG),
-			liveRangeInfo(NULL)
+	instruction(start), maxReg(INVALID_REG), minReg(INVALID_REG)
 {
 	initProgramInfo();
 }
@@ -29,7 +28,6 @@ RegisterAllocator::~RegisterAllocator()
 	{
 		delete iter->second;
 	}
-	delete liveRangeInfo;
 }
 
 void RegisterAllocator::initProgramInfo()
@@ -124,18 +122,11 @@ bool RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 	int spillCount = 0;
 	do
 	{
-		// build live ranges
-		delete liveRangeInfo;
-		liveRangeInfo = new LiveRangeInfo();
-		for (RegistersIter iter = registerInfo.begin(); iter
-				!= registerInfo.end(); iter++)
-		{
-			if (isAllocatableRegister(iter->second->getNo()))
-				liveRangeInfo->addRegister(*(iter->second));
-		}
+		// calulate liveness and live ranges
+		LiveRangeInfo liveRangeInfo(instructions);
 
 		// build interference graph
-		InterferenceGraph& graph = liveRangeInfo->getInterferenceGraph();
+		InterferenceGraph& graph = liveRangeInfo.getInterferenceGraph();
 
 		InterferenceGraph graphCopy(graph);
 		DeletedNodes deletedNodes;

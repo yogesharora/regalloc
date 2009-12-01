@@ -3,7 +3,9 @@
 .SECONDARY:
 
 OBJS :=	s3.lex.o s3.y.o regalloc.o Instruction.o RegisterInfo.o \
-		RegisterAllocator.o LiveRangeInfo.o InterferenceGraph.o
+		RegisterAllocator.o LiveRangeInfo.o InterferenceGraph.o \
+		Bitset.o LivenessInfo.o LivenessAnalysis.o
+		
 
 all: ra
 

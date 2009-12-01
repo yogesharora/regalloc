@@ -24,7 +24,6 @@ class RegisterAllocator
 	int noOfRegisters;
 	Register maxReg;
 	Register minReg;
-	LiveRangeInfo *liveRangeInfo;
 
 	typedef std::vector<Instruction*> Instructions;
 	typedef Instructions::iterator InstructionsIter;
