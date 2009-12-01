@@ -7,10 +7,30 @@
 
 #include "InterferenceGraph.h"
 
-InterferenceGraph::InterferenceGraph()
+InterferenceGraph::InterferenceGraph(Registers& reg)
 {
+	for (RegistersIter regIter = reg.begin(); regIter != reg.end(); regIter++)
+	{
+		if(isAllocatableRegister(regIter->first))
+			graph[regIter->second].neighbors;
+	}
 }
 
+bool InterferenceGraph::isAllocatableRegister(Register no)
+{
+	switch (no)
+	{
+		case R0 :
+		case R4 :
+		case R5 :
+		case R6 :
+		case R7 :
+			return false;
+			break;
+		default :
+			return true;
+	}
+}
 InterferenceGraph::~InterferenceGraph()
 {
 }

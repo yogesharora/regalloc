@@ -9,7 +9,7 @@
 #include "LiveRangeInfo.h"
 
 LiveRangeInfo::LiveRangeInfo(Instructions &inst,  Registers& reg) :
-	instructions(inst), liveAnalysis(inst), registers(reg)
+	instructions(inst), liveAnalysis(inst), registers(reg), graph(reg)
 {
 	liveAnalysis.analyse();
 	liveAnalysis.print();

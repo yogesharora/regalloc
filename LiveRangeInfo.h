@@ -20,13 +20,13 @@
 
 class LiveRangeInfo
 {
-	InterferenceGraph graph;
-
 	LiveRangeInfo(LiveRangeInfo&);
 
 	Instructions &instructions;
 	LivenessAnalysis liveAnalysis;
 	Registers &registers;
+	InterferenceGraph graph;
+
 public:
 	LiveRangeInfo(Instructions &instructions, Registers& registers);
 	~LiveRangeInfo();

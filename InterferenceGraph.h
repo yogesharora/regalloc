@@ -65,8 +65,9 @@ class InterferenceGraph
 	};
 
 	void removeFrontNode();
+	bool InterferenceGraph::isAllocatableRegister(Register no);
 public:
-	InterferenceGraph();
+	InterferenceGraph(Registers& reg);
 	~InterferenceGraph();
 	void addInterference(RegisterInfo &reg1, RegisterInfo &reg2);
 	void createRegisterQueues();
