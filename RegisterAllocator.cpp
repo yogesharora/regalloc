@@ -160,7 +160,7 @@ void RegisterAllocator::verbosePrint(InterferenceGraph & graph)
 	}
 }
 
-bool RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
+bool RegisterAllocator::allocateRegs(Register startReg, int noOfPhysicalRegs,
 		int noOfSpills)
 {
 	bool allAllocated = false;
@@ -177,14 +177,14 @@ bool RegisterAllocator::allocateRegs(Register startReg, int noOfRegs,
 		DeletedNodes deletedNodes;
 
 		//optimistically remove nodes
-		deletNodesFromGraph(graphCopy, deletedNodes, noOfRegs);
+		deletNodesFromGraph(graphCopy, deletedNodes, noOfPhysicalRegs);
 
 		// try to color
 		// if fail:
 		// choose reg with lowest cost to spill
 		// add spill code
 		allAllocated = assignRegistersToGraph(graph, deletedNodes, startReg,
-				noOfRegs, spillCount);
+				noOfPhysicalRegs, spillCount);
 
 		if (allAllocated)
 		{
@@ -286,14 +286,14 @@ void RegisterAllocator::spillFillRegister(RegisterInfo& reg, int spillMemory,
 }
 
 void RegisterAllocator::deletNodesFromGraph(InterferenceGraph& graph,
-		DeletedNodes& stack, int noOfRegs)
+		DeletedNodes& stack, int noOfPhysicalRegs)
 {
 	while (graph.getNoNodes() != 0)
 	{
 		PRINTF("graph size %d\n", graph.getNoNodes());
 		graph.print();
 
-		RegisterInfo* node = graph.removeNodeWithDegreeLessThan(noOfRegs);
+		RegisterInfo* node = graph.removeNodeWithDegreeLessThan(noOfPhysicalRegs);
 		if (node != NULL)
 		{
 			PRINTF("register removed %d\n", node->getNo());

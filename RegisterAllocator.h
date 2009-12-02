@@ -50,7 +50,7 @@ class RegisterAllocator
 	void updateRegisterInfo(Instruction&);
 	bool isAllocatableRegister(Register no);
 	void deletNodesFromGraph(InterferenceGraph& graph, DeletedNodes& stack,
-			int noRegs);
+			int noOfPhysicalRegs);
 	bool assignRegistersToGraph(InterferenceGraph& graph, DeletedNodes& stack,
 			int startReg, int noOfRegs,int &spillCount);
 	void spillFillRegister(RegisterInfo& reg, int spillMemory, Instructions &modifiedInst);
@@ -61,7 +61,7 @@ class RegisterAllocator
 public:
 	RegisterAllocator(inst_t start);
 	~RegisterAllocator();
-	bool allocateRegs(Register startReg, int noOfRegs, int noOfSpills);
+	bool allocateRegs(Register startReg, int noOfPhysicalRegs, int noOfSpills);
 	void printInstructions(FILE* fptr);
 };
 

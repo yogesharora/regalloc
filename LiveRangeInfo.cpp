@@ -37,7 +37,6 @@ InterferenceGraph& LiveRangeInfo::getInterferenceGraph()
 		}
 	}
 
-	graph.createRegisterQueues();
 	return graph;
 }
 

@@ -44,33 +44,13 @@ class InterferenceGraph
 	typedef RegGraph::const_iterator RegGraphConstIter;
 	RegGraph graph;
 
-	//	RemovalQueue removalQueue;
-	typedef std::list<RegGraphNode*> RemovalQueue;
-	RemovalQueue removalQueue;
-
-	struct spillCriteria
-	{
-		bool operator()(RegGraphNode* a, RegGraphNode* b)
-		{
-			return a->first->getCost() < b->first->getCost();
-		}
-	};
-
-	struct removalCriteria
-	{
-		bool operator()(RegGraphNode* a, RegGraphNode* b)
-		{
-			return a->second.neighbors.size() < b->second.neighbors.size();
-		}
-	};
-
-	void removeFrontNode();
-	bool InterferenceGraph::isAllocatableRegister(Register no);
+	void removeGraphNode(RegisterInfo *graphNode);
+	bool isAllocatableRegister(Register no);
 public:
 	InterferenceGraph(Registers& reg);
 	~InterferenceGraph();
 	void addInterference(RegisterInfo &reg1, RegisterInfo &reg2);
-	void createRegisterQueues();
+
 	RegisterInfo* removeNodeWithDegreeLessThan(int degree);
 	RegisterInfo* removeSpillable();
 	Register assignRegistersToNode(RegisterInfo& reg, int startReg, int noOfRegs);

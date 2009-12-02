@@ -11,7 +11,7 @@ InterferenceGraph::InterferenceGraph(Registers& reg)
 {
 	for (RegistersIter regIter = reg.begin(); regIter != reg.end(); regIter++)
 	{
-		if(isAllocatableRegister(regIter->first))
+		if (isAllocatableRegister(regIter->first))
 			graph[regIter->second].neighbors;
 	}
 }
@@ -51,8 +51,7 @@ void InterferenceGraph::print() const
 				!= neighbors.end(); iter2++)
 		{
 			PRINTF(" R%d", (*iter2)->getNo());
-		}
-		PRINTF("\n");
+		} PRINTF("\n");
 	}
 }
 
@@ -64,53 +63,60 @@ void InterferenceGraph::getMapping(Mapping& mapping) const
 	}
 }
 
-void InterferenceGraph::createRegisterQueues()
-{
-	for (RegGraphIter iter = graph.begin(); iter != graph.end(); iter++)
-	{
-		removalQueue.push_back(&(*iter));
-	}
-}
-
 RegisterInfo* InterferenceGraph::removeNodeWithDegreeLessThan(int maxDegree)
 {
-	removalQueue.sort(removalCriteria());
-	RegisterInfo& node = *(removalQueue.front()->first);
-	int degree = removalQueue.front()->second.neighbors.size();
-	if (degree < maxDegree)
+	// traverse the graph ...and remove first node which has highest degree < maxdegree
+	int curMaxDegree = -1;
+	RegisterInfo* regWithDegLessThanMax = NULL;
+	for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
-		removeFrontNode();
-		return &node;
+		int degree = iter->second.neighbors.size();
+		if (degree < maxDegree && degree > curMaxDegree)
+		{
+			curMaxDegree = degree;
+			regWithDegLessThanMax = iter->first;
+			if (degree == (maxDegree - 1))
+				break;
+		}
 	}
-	else
-		return NULL;
+
+	removeGraphNode(regWithDegLessThanMax);
+
+	return regWithDegLessThanMax;
 }
 
 RegisterInfo* InterferenceGraph::removeSpillable()
 {
-	removalQueue.sort(spillCriteria());
-	RegisterInfo& node = *(removalQueue.front()->first);
-	removeFrontNode();
-	return &node;
+	// traverse the graph and find first node with minimum cost
+	int minCost = -1;
+	RegisterInfo* minCostNode = NULL;
+	for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
+	{
+		int cost = iter->first->getCost();
+		if (minCost == -1 || cost < minCost)
+		{
+			minCost = cost;
+			minCostNode = iter->first;
+		}
+	}
+
+	removeGraphNode(minCostNode);
+	return minCostNode;
 }
 
-void InterferenceGraph::removeFrontNode()
+void InterferenceGraph::removeGraphNode(RegisterInfo *graphNode)
 {
-	RegNeighbors& neighbors = removalQueue.front()->second.neighbors;
-	RegisterInfo& nodeToRemove = *(removalQueue.front()->first);
+	if (graphNode == NULL)
+		return;
+	RegNeighbors& neighbors = graph[graphNode].neighbors;
 	for (RegNeighborsIter iter = neighbors.begin(); iter != neighbors.end(); iter++)
 	{
 		RegisterInfo* neighbor = *iter;
 		RegNeighbors& neighborsEdges = graph[neighbor].neighbors;
-		neighborsEdges.erase(&nodeToRemove);
+		neighborsEdges.erase(graphNode);
 	}
 
-	graph.erase(&nodeToRemove);
-	removalQueue.clear();
-	for (RegGraphIter iter = graph.begin(); iter != graph.end(); iter++)
-	{
-		removalQueue.push_back(&(*iter));
-	}
+	graph.erase(graphNode);
 }
 
 Register InterferenceGraph::assignRegistersToNode(RegisterInfo& reg,
@@ -142,7 +148,7 @@ Register InterferenceGraph::assignRegistersToNode(RegisterInfo& reg,
 	return assignedReg;
 }
 
-void  InterferenceGraph::finalizeRegisterAssignment()
+void InterferenceGraph::finalizeRegisterAssignment()
 {
 	for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
