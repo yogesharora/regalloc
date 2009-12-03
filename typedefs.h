@@ -17,6 +17,14 @@ typedef std::vector<Instruction*> Instructions;
 typedef Instructions::iterator InstructionsIter;
 typedef Instructions::const_iterator InstructionsConstIter;
 
+struct registerCompare
+{
+	bool operator()(const Register a, const Register b)
+	{
+		return a < b;
+	}
+};
+
 typedef std::map<Register, RegisterInfo*> Registers;
 typedef Registers::iterator RegistersIter;
 typedef Registers::const_iterator RegistersConstIter;

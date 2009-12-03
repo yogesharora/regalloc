@@ -37,7 +37,7 @@ class InterferenceGraph
 		}
 	};
 
-	typedef std::map<RegisterInfo*, RegGraphNodeInfo> RegGraph;
+	typedef std::map<RegisterInfo*, RegGraphNodeInfo, regInfocompare> RegGraph;
 	typedef RegGraph::value_type RegGraphNode;
 
 	typedef RegGraph::iterator RegGraphIter;
