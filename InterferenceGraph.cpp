@@ -37,8 +37,12 @@ InterferenceGraph::~InterferenceGraph()
 
 void InterferenceGraph::addInterference(RegisterInfo &reg1, RegisterInfo &reg2)
 {
-	graph[&reg1].neighbors.insert(&reg2);
-	graph[&reg2].neighbors.insert(&reg1);
+	if (isAllocatableRegister(reg1.getNo()) && isAllocatableRegister(
+			reg2.getNo()))
+	{
+		graph[&reg1].neighbors.insert(&reg2);
+		graph[&reg2].neighbors.insert(&reg1);
+	}
 }
 
 void InterferenceGraph::print() const
@@ -51,7 +55,8 @@ void InterferenceGraph::print() const
 				!= neighbors.end(); iter2++)
 		{
 			PRINTF(" R%d", (*iter2)->getNo());
-		} PRINTF("\n");
+		}
+		PRINTF("\n");
 	}
 }
 
