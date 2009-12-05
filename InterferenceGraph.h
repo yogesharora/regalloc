@@ -56,7 +56,6 @@ public:
 	Register assignRegistersToNode(RegisterInfo& reg, int startReg, int noOfRegs);
 	void print() const;
 	void getMapping(Mapping& mapping) const;
-	void finalizeRegisterAssignment();
 
 	int getNoNodes()
 	{

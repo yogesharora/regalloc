@@ -334,3 +334,33 @@ void Instruction::printOperand(FILE *fptr, struct operand op)
 			break;
 	}
 }
+
+void Instruction::allocateRegs(Mapping& mapping)
+{
+	for (int i = 0; i < 3; i++)
+	{
+		if (instruction->ops[i].t == op_reg && isAllocatableRegister(instruction->ops[i].reg))
+		{
+			int from = instruction->ops[i].reg;
+			Register to = mapping[from];
+			instruction->ops[i].reg = to;
+
+		}
+	}
+}
+
+bool Instruction::isAllocatableRegister(Register no)
+{
+	switch (no)
+	{
+		case R0 :
+		case R4 :
+		case R5 :
+		case R6 :
+		case R7 :
+			return false;
+			break;
+		default :
+			return true;
+	}
+}

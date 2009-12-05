@@ -121,7 +121,6 @@ void RegisterAllocator::verbosePrint(InterferenceGraph & graph)
 {
 	if (verbose)
 	{
-		graph.getMapping(mapping);
 		MappingIter iter = mapping.begin();
 		for (; iter != mapping.end(); iter++)
 		{
@@ -188,13 +187,23 @@ bool RegisterAllocator::allocateRegs(Register startReg, int noOfPhysicalRegs,
 
 		if (allAllocated)
 		{
+			graph.getMapping(mapping);
 			verbosePrint(graph);
-			graph.finalizeRegisterAssignment();
+			finalizeRegisterAssignment();
 			return true;
 		}
 	} while (!allAllocated && spillCount < noOfSpills);
 
 	return false;
+}
+
+void RegisterAllocator::finalizeRegisterAssignment()
+{
+	for (InstructionsIter iter = instructions.begin(); iter
+			!= instructions.end(); iter++)
+	{
+		(*iter)->allocateRegs(mapping);
+	}
 }
 
 void RegisterAllocator::printInstructions(FILE* fptr)

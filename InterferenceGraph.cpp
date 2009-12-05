@@ -152,14 +152,3 @@ Register InterferenceGraph::assignRegistersToNode(RegisterInfo& reg,
 
 	return assignedReg;
 }
-
-void InterferenceGraph::finalizeRegisterAssignment()
-{
-	for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
-	{
-		RegisterInfo& regInfo = *(iter->first);
-		Register assignedReg = iter->second.assignedReg;
-
-		regInfo.assignRegisterToInstructions(assignedReg);
-	}
-}

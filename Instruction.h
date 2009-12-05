@@ -11,6 +11,7 @@
 #include "s3inst.h"
 #include "globals.h"
 #include <set>
+#include<map>
 
 class Instruction
 {
@@ -58,6 +59,7 @@ public:
 
 	Instruction& spillInst(int reg, int newReg, int r5Offset);
 
+	void allocateRegs(Mapping& mapping);
 private:
 	Instruction(Instruction&);
 	void initRegisterInfo();
@@ -67,6 +69,7 @@ private:
 	void renameDestRegister(Register from, Register to);
 	inst_t genFillInst(int newReg, int no);
 	inst_t genSpillInst(int newReg, int no);
+	bool isAllocatableRegister(Register no);
 
 	inst_t instruction;
 	int instructionNumber;
