@@ -242,7 +242,7 @@ void Instruction::renameRegister(Register from, Register to)
 	}
 }
 
-void Instruction::printInstruction(FILE* fptr)
+void Instruction::printInstruction(FILE* fptr, bool printNewLine)
 {
 	if (instruction->label)
 	{
@@ -302,7 +302,8 @@ void Instruction::printInstruction(FILE* fptr)
 		default :
 			break;
 	}
-	fprintf(fptr, "\n");
+	if(printNewLine)
+		fprintf(fptr, "\n");
 }
 
 void Instruction::printConditionCode(FILE *fptr, int ccode)

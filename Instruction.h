@@ -22,7 +22,7 @@ public:
 
 	void renameRegister(Register from, Register to);
 
-	void printInstruction(FILE* fptr);
+	void printInstruction(FILE* fptr, bool printNewLine=true);
 
 	Register getDestReg() const
 	{

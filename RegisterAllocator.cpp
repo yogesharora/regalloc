@@ -245,24 +245,6 @@ void RegisterAllocator::spillFillRegister(RegisterInfo& reg, int spillMemory,
 {
 	const RegisterInfo::RegisterUsageSet& useInsts = reg.getUseInstructions();
 	instructions.reserve(instructions.size() + useInsts.size());
-	for (RegisterInfo::RegisterUsageSetConstIter iter = useInsts.begin(); iter
-			!= useInsts.end(); iter++)
-	{
-		Instruction& inst = *(*iter);
-		Instruction& fillInst = inst.fillInst(reg.getNo(), ++maxReg, -1
-				* spillMemory);
-
-		instructions.insert(instructions.begin() + inst.getNo(), &fillInst);
-
-		for (InstructionsIter iter2 = instructions.begin() + inst.getNo(); iter2
-				!= instructions.end(); iter2++)
-		{
-			(*iter2)->setNo((*iter2)->getNo() + 1);
-		}
-
-		modifiedInst.push_back(&inst);
-		modifiedInst.push_back(&fillInst);
-	}
 
 	const RegisterInfo::RegisterUsageSet& defInsts = reg.getDefInstructions();
 	for (RegisterInfo::RegisterUsageSetConstIter iter = defInsts.begin(); iter
@@ -283,6 +265,27 @@ void RegisterAllocator::spillFillRegister(RegisterInfo& reg, int spillMemory,
 		modifiedInst.push_back(&inst);
 		modifiedInst.push_back(&spillInst);
 	}
+
+	for (RegisterInfo::RegisterUsageSetConstIter iter = useInsts.begin(); iter
+			!= useInsts.end(); iter++)
+	{
+		Instruction& inst = *(*iter);
+		Instruction& fillInst = inst.fillInst(reg.getNo(), ++maxReg, -1
+				* spillMemory);
+
+		instructions.insert(instructions.begin() + inst.getNo(), &fillInst);
+
+		for (InstructionsIter iter2 = instructions.begin() + inst.getNo(); iter2
+				!= instructions.end(); iter2++)
+		{
+			(*iter2)->setNo((*iter2)->getNo() + 1);
+		}
+
+		modifiedInst.push_back(&inst);
+		modifiedInst.push_back(&fillInst);
+	}
+
+
 }
 
 void RegisterAllocator::deletNodesFromGraph(InterferenceGraph& graph,
