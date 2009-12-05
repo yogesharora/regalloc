@@ -61,20 +61,25 @@ void c_regalloc()
 	RegisterAllocator reg( instList);
 	if (k == 0)
 		k = DEFAULT_K_VALUE;
+	FILE *fptr = fopen(outfile, "w");
+		codegen_entry(fptr);
+
 	if (reg.allocateRegs(10, k, 10))
 	{
 		FILE *fptr = fopen(outfile, "w");
 		codegen_entry(fptr);
 		reg.printInstructions(fptr);
-		codegen_exit(fptr);
-		fclose(fptr); /* close file */
+		fprintf(fptr, "\t.END\n");
 	}
 	else
 	{
+		fprintf(fptr, ";unable to find an allocation\n");
+		print_list(fptr, instList);
 		fprintf(stdout, "unable to find an allocation\n");
+
 	}
-
-
+	codegen_exit(fptr);
+	fclose(fptr); /* close file */
 }
 
 /**************************************************************************

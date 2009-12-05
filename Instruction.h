@@ -17,7 +17,7 @@ class Instruction
 {
 
 public:
-	Instruction(inst_t inst, int no, bool del=false);
+	Instruction(inst_t inst, int no);
 
 	~Instruction();
 
