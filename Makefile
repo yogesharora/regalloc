@@ -31,7 +31,7 @@ wc:
 	-wc -l *.c *.y *.lex
 
 
-minicopt.o:  cmdline.lex s3inst.h
+regalloc.o:  cmdline.lex s3inst.h
 cmdline.o: cmdline.c
 cmdline.c: cmdline.lex
 s3.y.o : s3inst.h

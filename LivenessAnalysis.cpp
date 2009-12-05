@@ -59,7 +59,9 @@ void LivenessAnalysis::print()
 	for (int i = 0; i < noInstruction; i++)
 	{
 		PRINTF("Instruction No %d - ",i+1 );
+#ifdef VERBOSE
 		instructions[i]->printInstruction(stdout, false);
+#endif
 		PRINTF(" ");
 		liveInfo[i]->print();
 		PRINTF("\n");
