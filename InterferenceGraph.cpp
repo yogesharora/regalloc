@@ -7,7 +7,8 @@
 
 #include "InterferenceGraph.h"
 
-InterferenceGraph::InterferenceGraph(Registers& reg)
+InterferenceGraph::InterferenceGraph(Registers& reg, Register origMax) :
+	origMaxRegister(origMax)
 {
 	for (RegistersIter regIter = reg.begin(); regIter != reg.end(); regIter++)
 	{
@@ -98,10 +99,28 @@ RegisterInfo* InterferenceGraph::removeSpillable()
 	for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
 	{
 		int cost = iter->first->getCost();
-		if (minCost == -1 || cost < minCost)
+		Register regToSpill = iter->first->getNo();
+		if (regToSpill <= origMaxRegister)
 		{
-			minCost = cost;
-			minCostNode = iter->first;
+			if (minCost == -1 || cost < minCost)
+			{
+				minCost = cost;
+				minCostNode = iter->first;
+			}
+		}
+	}
+
+	if (minCostNode == NULL)
+	{
+		minCost = -1;
+		for (RegGraphConstIter iter = graph.begin(); iter != graph.end(); iter++)
+		{
+			int cost = iter->first->getCost();
+			if (minCost == -1 || cost < minCost)
+			{
+				minCost = cost;
+				minCostNode = iter->first;
+			}
 		}
 	}
 

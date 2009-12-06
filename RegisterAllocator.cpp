@@ -167,7 +167,7 @@ bool RegisterAllocator::allocateRegs(Register startReg, int noOfPhysicalRegs,
 	do
 	{
 		// calulate liveness and live ranges
-		LiveRangeInfo liveRangeInfo(instructions, registerInfo);
+		LiveRangeInfo liveRangeInfo(instructions, registerInfo, originalMaxReg);
 
 		// build interference graph
 		InterferenceGraph& graph = liveRangeInfo.getInterferenceGraph();

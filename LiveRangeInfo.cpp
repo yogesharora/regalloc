@@ -8,8 +8,8 @@
 #include "globals.h"
 #include "LiveRangeInfo.h"
 
-LiveRangeInfo::LiveRangeInfo(Instructions &inst,  Registers& reg) :
-	instructions(inst), liveAnalysis(inst), registers(reg), graph(reg)
+LiveRangeInfo::LiveRangeInfo(Instructions &inst,  Registers& reg, Register origMax) :
+	instructions(inst), liveAnalysis(inst), registers(reg), graph(reg, origMax), origMaxReg(origMax)
 {
 	liveAnalysis.analyse();
 	liveAnalysis.print();

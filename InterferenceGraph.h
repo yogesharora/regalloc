@@ -44,10 +44,12 @@ class InterferenceGraph
 	typedef RegGraph::const_iterator RegGraphConstIter;
 	RegGraph graph;
 
+	Register origMaxRegister;
+
 	void removeGraphNode(RegisterInfo *graphNode);
 	bool isAllocatableRegister(Register no);
 public:
-	InterferenceGraph(Registers& reg);
+	InterferenceGraph(Registers& reg, Register origMax);
 	~InterferenceGraph();
 	void addInterference(RegisterInfo &reg1, RegisterInfo &reg2);
 

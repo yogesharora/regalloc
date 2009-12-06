@@ -26,9 +26,10 @@ class LiveRangeInfo
 	LivenessAnalysis liveAnalysis;
 	Registers &registers;
 	InterferenceGraph graph;
+	Register origMaxReg;
 
 public:
-	LiveRangeInfo(Instructions &instructions, Registers& registers);
+	LiveRangeInfo(Instructions &instructions, Registers& registers, Register origMaxReg);
 	~LiveRangeInfo();
 	InterferenceGraph& getInterferenceGraph();
 };
