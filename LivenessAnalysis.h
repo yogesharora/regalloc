@@ -42,13 +42,14 @@ class LivenessAnalysis
 	void makeNop(inst_t cur);
 	void deleteOldLiveInfo();
 
-	const Instructions& instructions;
+	Instructions& instructions;
 public:
-	LivenessAnalysis(const Instructions& inst);
+	LivenessAnalysis(Instructions& inst);
 	~LivenessAnalysis();
 
 	void analyse();
 	void print();
+	bool dce();
 	RegisterSet getLiveRegisters(int instNo);
 };
 

@@ -40,7 +40,7 @@ public:
 		return allReg;
 	}
 
-	int getNo() const
+	unsigned int getNo() const
 	{
 		return instructionNumber;
 	}

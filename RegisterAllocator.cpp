@@ -9,6 +9,7 @@
 #include <stack>
 
 extern int verbose;
+extern int dce;
 
 using namespace std;
 RegisterAllocator::RegisterAllocator(inst_t start) :
@@ -41,11 +42,27 @@ void RegisterAllocator::initProgramInfo()
 		calcMaxMinRegisters(cur);
 		Instruction* newInstruction = new Instruction(cur, ctr);
 		instructions.push_back(newInstruction);
-		updateRegisterInfo(*newInstruction);
 
 		ctr++;
 		cur = cur->next;
 	}
+
+//	ctr = 0;
+//	if (dce)
+//	{
+//		LivenessAnalysis analysis(instructions);
+//		while (analysis.dce() == true)
+//			analysis.analyse();
+//	}
+
+//	PRINTF("Instructions after dce\n");
+//	for (InstructionsIter iter = instructions.begin(); iter
+//			!= instructions.end(); iter++)
+//	{
+//		(*iter)->setNo(ctr++);
+//		updateRegisterInfo(**iter);
+//		(*iter)->printInstruction(stdout);
+//	}
 
 	noOfInstructions = instructions.size();
 	noOfRegisters = (maxReg - minReg) + 1;
@@ -164,6 +181,7 @@ bool RegisterAllocator::allocateRegs(Register startReg, int noOfPhysicalRegs,
 {
 	bool allAllocated = false;
 	int spillCount = 0;
+
 	do
 	{
 		// calulate liveness and live ranges
@@ -171,10 +189,9 @@ bool RegisterAllocator::allocateRegs(Register startReg, int noOfPhysicalRegs,
 
 		// build interference graph
 		InterferenceGraph& graph = liveRangeInfo.getInterferenceGraph();
-
 		InterferenceGraph graphCopy(graph);
-		DeletedNodes deletedNodes;
 
+		DeletedNodes deletedNodes;
 		//optimistically remove nodes
 		deletNodesFromGraph(graphCopy, deletedNodes, noOfPhysicalRegs);
 
@@ -215,6 +232,15 @@ void RegisterAllocator::printInstructions(FILE* fptr)
 	}
 }
 
+void RegisterAllocator::regenerateRegInfo(Instructions modifiedInst)
+{
+    for (InstructionsIter iter = modifiedInst.begin(); iter
+			!= modifiedInst.end(); iter++)
+	{
+		updateRegisterInfo(*(*iter));
+	}
+}
+
 bool RegisterAllocator::assignRegistersToGraph(InterferenceGraph& graph,
 		DeletedNodes& stack, int startReg, int noOfRegs, int &spillCount)
 {
@@ -234,14 +260,7 @@ bool RegisterAllocator::assignRegistersToGraph(InterferenceGraph& graph,
 			spillCount++;
 			registerInfo.erase(regToSpillFill->getNo());
 			delete regToSpillFill;
-
-			for (InstructionsIter iter = modifiedInst.begin(); iter
-					!= modifiedInst.end(); iter++)
-			{
-				updateRegisterInfo(*(*iter));
-			}
-
-			return false;
+		    return false;
 		}
 
 		stack.pop();
@@ -252,14 +271,19 @@ bool RegisterAllocator::assignRegistersToGraph(InterferenceGraph& graph,
 void RegisterAllocator::spillFillRegister(RegisterInfo& reg, int spillMemory,
 		Instructions &modifiedInst)
 {
+	PRINTF("register spilled %d", reg.getNo());
 	const RegisterInfo::RegisterUsageSet& useInsts = reg.getUseInstructions();
-	instructions.reserve(instructions.size() + useInsts.size());
+	instructions.reserve(instructions.size() + useInsts.size()+1);
 
 	const RegisterInfo::RegisterUsageSet& defInsts = reg.getDefInstructions();
 	for (RegisterInfo::RegisterUsageSetConstIter iter = defInsts.begin(); iter
 			!= defInsts.end(); iter++)
 	{
+
 		Instruction& inst = *(*iter);
+		if(inst.getNo()>=instructions.size())
+					continue;
+
 		Instruction& spillInst = inst.spillInst(reg.getNo(), ++maxReg, -1
 				* spillMemory);
 
@@ -279,6 +303,9 @@ void RegisterAllocator::spillFillRegister(RegisterInfo& reg, int spillMemory,
 			!= useInsts.end(); iter++)
 	{
 		Instruction& inst = *(*iter);
+		if(inst.getNo()>=instructions.size())
+			continue;
+
 		Instruction& fillInst = inst.fillInst(reg.getNo(), ++maxReg, -1
 				* spillMemory);
 
@@ -302,24 +329,17 @@ void RegisterAllocator::deletNodesFromGraph(InterferenceGraph& graph,
 {
 	while (graph.getNoNodes() != 0)
 	{
-		PRINTF("graph size %d\n", graph.getNoNodes());
-		graph.print();
-
 		RegisterInfo* node = graph.removeNodeWithDegreeLessThan(noOfPhysicalRegs);
 		if (node != NULL)
 		{
-			PRINTF("register removed %d\n", node->getNo());
 			stack.push(DeletedNode(node, false));
 		}
 		else
 		{
 
 			node = graph.removeSpillable();
-			PRINTF("register spilled %d with cost %d\n", node->getNo(),
-					node->getCost());
 			stack.push(DeletedNode(node, true));
 		}
-	} PRINTF("graph size %d\n", graph.getNoNodes());
-	graph.print();
+	}
 }
 

@@ -5,6 +5,7 @@
   #define MAX_IN 1000
 
   int verbose=0;
+  int dce=0;
   char *outfile=NULL;
   int k;
 
@@ -29,6 +30,7 @@
 "-?"          { usage(); }
 
 -v          { verbose = 1; }
+-dce		{ dce = 1; }
 
 -o          { BEGIN(FNAME); }
 -k          { BEGIN(K); }

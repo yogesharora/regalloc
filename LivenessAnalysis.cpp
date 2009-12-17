@@ -9,7 +9,7 @@
 #include "globals.h"
 #include "string.h"
 
-LivenessAnalysis::LivenessAnalysis(const Instructions& inst) :
+LivenessAnalysis::LivenessAnalysis(Instructions& inst) :
 	instructions(inst)
 {
 	initProgramInfo();
@@ -104,7 +104,7 @@ void LivenessAnalysis::initLivelinessInfo()
 		createSuccessorInfo(*info, inst, ctr);
 
 		// this is a last element
-		if (iter == instructions.begin() + instructions.size())
+		if (iter == instructions.begin() + instructions.size()-1)
 		{
 			info->setLastInstruction();
 		}
@@ -295,4 +295,25 @@ int LivenessAnalysis::getHighestReg(inst_t instruction)
 RegisterSet LivenessAnalysis::getLiveRegisters(int instNo)
 {
 	return liveInfo[instNo]->getLiveRegisters();
+}
+
+bool LivenessAnalysis::dce()
+{
+	int noErased=0;
+	for (int i = 0; i < noInstruction; i++)
+	{
+		if(liveInfo[i]->isDeadCode())
+		{
+			PRINTF("Instruction eliminated");
+			InstructionsIter iter = instructions.begin()+i-noErased;
+			(*iter)->printInstruction(stdout);
+			instructions.erase(instructions.begin()+i-noErased);
+			noErased++;
+		}
+	}
+	noInstruction -=noErased;
+	if(noErased>0)
+		return true;
+	else
+		return false;
 }

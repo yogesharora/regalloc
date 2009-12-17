@@ -43,7 +43,7 @@ public:
 	void setLastInstruction();
 	void addSuccessor(LivenessInfo&);
 	void setCanBeEliminated(bool yesNo) { canBeEliminated=yesNo; }
-	int getCanBeEliminated() {return canBeEliminated;}
+	bool getCanBeEliminated() {return canBeEliminated;}
 	void print();
 	// returns true if liveness has changed
 	bool calculateLiveliness();

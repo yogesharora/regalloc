@@ -58,6 +58,7 @@ class RegisterAllocator
 	RegisterAllocator(RegisterAllocator&);
     void verbosePrint(InterferenceGraph & graph);
     void finalizeRegisterAssignment();
+    void regenerateRegInfo(Instructions modifiedInst);
 public:
 	RegisterAllocator(inst_t start);
 	~RegisterAllocator();

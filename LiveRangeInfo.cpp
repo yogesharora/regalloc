@@ -12,7 +12,6 @@ LiveRangeInfo::LiveRangeInfo(Instructions &inst,  Registers& reg, Register origM
 	instructions(inst), liveAnalysis(inst), registers(reg), graph(reg, origMax), origMaxReg(origMax)
 {
 	liveAnalysis.analyse();
-	liveAnalysis.print();
 }
 
 LiveRangeInfo::~LiveRangeInfo()
@@ -38,6 +37,7 @@ InterferenceGraph& LiveRangeInfo::getInterferenceGraph()
 			for (RegisterSetIter interferenceIter = regIter + 1; interferenceIter
 					!= regs.end(); interferenceIter++)
 			{
+				Register v2Reg = *interferenceIter;
 				RegisterInfo& v2 = *(registers[*interferenceIter]);
 				graph.addInterference(v1, v2);
 			}
